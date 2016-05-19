@@ -1,0 +1,58 @@
+{
+  "name": "contaoblackforest/contao-dropzone-upload",
+  "description": "Contao dropzone directly upload images in edit mask for Contao OpenSource CMS",
+  "keywords": [
+    "contao",
+    "backend",
+    "content",
+    "element",
+    "dropzone",
+    "module"
+  ],
+  "type": "contao-module",
+  "license": "LGPL-3.0",
+  "authors": [
+    {
+      "name": "Sven Baumann",
+      "email": "baumann.sv@gmail.com",
+      "homepage": "https://github.com/ContaoBlackforest",
+      "role": "Developer"
+    },
+    {
+      "name": "Dominik Tomasi",
+      "email": "dominik.tomasi@gmail.com",
+      "homepage": "https://github.com/ContaoBlackforest",
+      "role": "Developer"
+    }
+  ],
+  "support": {
+    "email": "baumann.sv@gmail.com",
+    "issues": "https://github.com/ContaoBlackforest/contao-dropzone-upload/issues",
+    "wiki": "https://github.com/ContaoBlackforest/contao-dropzone-upload/wiki",
+    "irc": "irc://irc.freenode.org/contao.dev",
+    "source": "https://github.com/ContaoBlackforest/contao-dropzone-upload"
+  },
+  "require": {
+    "php": ">=5.4",
+    "contao/core": ">=3.5,<3.6",
+    "contao-community-alliance/composer-plugin": "~2.0"
+  },
+  "require-dev": {},
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "autoload": {
+    "psr-4": {
+      "ContaoBlackForest\\DropZone\\": "src/"
+    }
+  },
+  "extra": {
+    "contao": {
+      "sources": {
+        "contao": "system/modules/dropzone-upload"
+      }
+    },
+    "branch-alias": {
+      "dev-develop": "1.0.x-dev"
+    }
+  }
+}
