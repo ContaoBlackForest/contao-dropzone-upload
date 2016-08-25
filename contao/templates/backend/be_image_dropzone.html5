@@ -1,0 +1,23 @@
+<div class="tl_tbox">
+    <h3>Upload</h3>
+    <div id="dropzone-image" class="dz-container">
+        <div class="dz-default dz-message">
+            <span><?= $GLOBALS['TL_LANG']['tl_files']['dropzone'] ?></span>
+        </div>
+        <div class="dropzone-previews"></div>
+    </div>
+</div>
+
+<script>
+    var dropZoneImage = new Dropzone('div#dropzone-image', {
+        url: '<?= $this->url ?>',
+        previewsContainer: '.dropzone-previews',
+        maxFilesize: <?= $this->maxFileSize ?>,
+        acceptedFiles: '<?= $this->acceptedFiles ?>',
+        uploadMultiple: <?= $this->uploadMultiple ?>
+    }).on('processing', function () {
+        $$(".dz-message").setStyle('padding', '12px 18px 0');
+    }).on('complete', function () {
+        location.reload();
+    });
+</script>
