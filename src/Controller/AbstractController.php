@@ -54,6 +54,7 @@ abstract class AbstractController
                     )
                 ),
                 'uploadMultiple' => $this->uploadMultiple,
+                'uploadDescription' => sprintf($GLOBALS['TL_LANG']['tl_content']['dropzone']['upload'], $this->folder),
             )
         );
 

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.1">
+  <file datatype="php" original="system/modules/dropzone-upload/languages/en/tl_content.xlf" source-language="en" target-language="de">
+    <body>
+      <trans-unit id="tl_content.dropzone.upload">
+        <source>Picture be uploaded in directory %s.</source>
+        <target>Das Bild wird in das Verzeichnis %s hochgeladen.</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

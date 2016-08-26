@@ -6,6 +6,7 @@
         </div>
         <div class="dropzone-previews"></div>
     </div>
+    <p class="tl_help tl_tip" title=""><strong><?= $this->uploadDescription ?></strong></p>
 </div>
 
 <script>
