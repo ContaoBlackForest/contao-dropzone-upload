@@ -42,13 +42,13 @@
   "prefer-stable": true,
   "autoload": {
     "psr-4": {
-      "ContaoBlackForest\\DropZone\\": "src/"
+      "ContaoBlackForest\\DropZoneBundle\\": ""
     }
   },
   "extra": {
     "contao": {
       "sources": {
-        "contao": "system/modules/dropzone-upload"
+        "Resources": "system/modules/dropzone-upload"
       }
     },
     "branch-alias": {

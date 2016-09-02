@@ -14,6 +14,6 @@
  * inject the drop zone for content elements
  */
 $GLOBALS['TL_DCA']['tl_content']['fields']['singleSRC']['load_callback'][] = array(
-    'ContaoBlackForest\DropZone\Controller\ContentSingleSourceController',
+    'ContaoBlackForest\DropZoneBundle\Controller\ContentSingleSourceController',
     'initializeParseWidget'
 );

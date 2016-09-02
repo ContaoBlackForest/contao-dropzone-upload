@@ -10,10 +10,9 @@
  * @copyright Copyright 2014-2016 ContaoBlackForest
  */
 
-namespace ContaoBlackForest\DropZone\Controller;
+namespace ContaoBlackForest\DropZoneBundle\Controller;
 
 use Contao\BackendTemplate;
-use Contao\Config;
 use Contao\Controller;
 use Contao\Environment;
 use Contao\FileTree;
@@ -44,11 +43,16 @@ abstract class AbstractController
         $dropZone = new BackendTemplate('be_image_dropzone');
         $dropZone->setData(
             array(
-                'url'            => '\'' .Environment::get('request') . '&dropfield=' . $widget->name . '&dropfolder=' . $this->folder. '\'',
-                'maxFiles'    => $this->maxFiles,
-                'uploadMultiple' => $this->uploadMultiple,
-                'uploadDescription' => sprintf($GLOBALS['TL_LANG']['tl_content']['dropzone']['upload'], $this->folder),
-                'controlInputField' => explode('.', $this->parseWidget)[1]
+                'url'               =>
+                    '\'' . Environment::get('request') . '&dropfield=' . $widget->name . '&dropfolder=' . $this->folder . '\'',
+                'maxFiles'          =>
+                    $this->maxFiles,
+                'uploadMultiple'    =>
+                    $this->uploadMultiple,
+                'uploadDescription' =>
+                    sprintf($GLOBALS['TL_LANG']['tl_content']['dropzone']['upload'], $this->folder),
+                'controlInputField' =>
+                    explode('.', $this->parseWidget)[1]
             )
         );
 

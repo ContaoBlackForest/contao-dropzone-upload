@@ -14,6 +14,6 @@
  * Contao hooks
  */
 $GLOBALS['TL_HOOKS']['executePreActions'][] = array(
-    'ContaoBlackForest\DropZone\Data\Store',
+    'ContaoBlackForest\DropZoneBundle\Data\Store',
     'parse'
 );

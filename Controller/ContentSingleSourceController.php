@@ -10,7 +10,7 @@
  * @copyright Copyright 2014-2016 ContaoBlackForest
  */
 
-namespace ContaoBlackForest\DropZone\Controller;
+namespace ContaoBlackForest\DropZoneBundle\Controller;
 
 use Contao\FileTree;
 

@@ -10,10 +10,9 @@
  * @copyright Copyright 2014-2016 ContaoBlackForest
  */
 
-namespace ContaoBlackForest\DropZone\Data;
+namespace ContaoBlackForest\DropZoneBundle\Data;
 
 use Contao\Controller;
-use Contao\DataContainer;
 use Contao\Dbafs;
 use Contao\DC_Table;
 use Contao\FilesModel;
@@ -21,12 +20,7 @@ use Contao\FileTree;
 use Contao\FileUpload;
 use Contao\Input;
 use Contao\Message;
-use Contao\Model;
-use Contao\Module;
 use Contao\RequestToken;
-use Contao\StringUtil;
-use Contao\System;
-use Image;
 
 class Store
 {
@@ -72,7 +66,7 @@ class Store
     protected function getResponse(array $uploads)
     {
         $content = '';
-        $status = 'error';
+        $status  = 'error';
 
         if (count($uploads) > 0) {
             $file = FilesModel::findByPath($uploads[0]);
@@ -82,7 +76,16 @@ class Store
             $dc = new DC_Table($table);
             $dc->__set('strField', Input::get('dropfield'));
 
-            $widget = new FileTree(FileTree::getAttributesFromDca($GLOBALS['TL_DCA'][$dc->table]['fields'][$dc->field], $dc->field, serialize(array($file->uuid)), Input::get('dropfield'), $dc->table, $dc));
+            $widget  = new FileTree(
+                FileTree::getAttributesFromDca(
+                    $GLOBALS['TL_DCA'][$dc->table]['fields'][$dc->field],
+                    $dc->field,
+                    serialize(array($file->uuid)),
+                    Input::get('dropfield'),
+                    $dc->table,
+                    $dc
+                )
+            );
             $content = $widget->generate();
 
             $status = 'confirmed';
