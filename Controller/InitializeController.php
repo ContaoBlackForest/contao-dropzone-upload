@@ -61,7 +61,7 @@ class InitializeController
         }
 
         $GLOBALS['TL_DCA'][$event->getDataProvider()]['fields'][$event->getProperty()]['load_callback'][] = array(
-            'ContaoBlackForest\DropZoneBundle\Controller\ContentSingleSourceController',
+            'ContaoBlackForest\DropZoneBundle\Controller\InjectController',
             'initializeParseWidget'
         );
     }
