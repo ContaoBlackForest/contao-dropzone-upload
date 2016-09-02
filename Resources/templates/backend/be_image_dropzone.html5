@@ -13,8 +13,6 @@
     var dropZoneImage = new Dropzone('div#dropzone-image', {
         url: <?= $this->url ?>,
         previewsContainer: '.dropzone-previews',
-        maxFiles: <?= $this->maxFiles ?>,
-        uploadMultiple: <?= $this->uploadMultiple ?>
     }).on('sending', function (file, xmlHttpRequest, formData) {
         AjaxRequest.displayBox('<?= $GLOBALS['TL_LANG']['MSC']['loadingData'] ?>');
 
