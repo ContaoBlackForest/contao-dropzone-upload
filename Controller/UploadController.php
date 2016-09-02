@@ -10,7 +10,7 @@
  * @copyright Copyright 2014-2016 ContaoBlackForest
  */
 
-namespace ContaoBlackForest\DropZoneBundle\Data;
+namespace ContaoBlackForest\DropZoneBundle\Controller;
 
 use Contao\Controller;
 use Contao\Dbafs;
@@ -22,7 +22,7 @@ use Contao\Input;
 use Contao\Message;
 use Contao\RequestToken;
 
-class Store
+class UploadController
 {
     public function parse($action)
     {
