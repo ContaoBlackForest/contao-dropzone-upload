@@ -11,9 +11,9 @@
  */
 
 /**
- * inject the drop zone for content elements
+ * Contao hooks
  */
-$GLOBALS['TL_DCA']['tl_content']['fields']['singleSRC']['load_callback'][] = array(
-    'ContaoBlackForest\DropZone\Controller\ContentSingleSourceController',
-    'initializeParseWidget'
+$GLOBALS['TL_HOOKS']['executePreActions'][] = array(
+    'ContaoBlackForest\DropZone\Data\Store',
+    'parse'
 );

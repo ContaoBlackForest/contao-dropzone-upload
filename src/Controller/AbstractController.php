@@ -24,9 +24,11 @@ abstract class AbstractController
 
     protected $folder;
 
-    protected $uploadMultiple;
+    protected $uploadMultiple = 'true';
 
-    public function initializeParseWidget($value)
+    protected $maxFiles = 'null';
+
+    public function initializeParseWidget($value, $dc)
     {
         $GLOBALS['TL_HOOKS']['parseWidget'][$this->parseWidget] = array(get_class($this), 'injectDropZone');
 
@@ -42,19 +44,11 @@ abstract class AbstractController
         $dropZone = new BackendTemplate('be_image_dropzone');
         $dropZone->setData(
             array(
-                'url'            => Environment::get('request') . '&dropfield=' . $widget->name . '&dropfolder=' . $this->folder,
-                'maxFileSize'    => Config::get('maxFileSize'),
-                'acceptedFiles'  => implode(
-                    ',',
-                    array_map(
-                        function ($a) {
-                            return '.' . $a;
-                        },
-                        trimsplit(',', strtolower(Config::get('uploadTypes')))
-                    )
-                ),
+                'url'            => '\'' .Environment::get('request') . '&dropfield=' . $widget->name . '&dropfolder=' . $this->folder. '\'',
+                'maxFiles'    => $this->maxFiles,
                 'uploadMultiple' => $this->uploadMultiple,
                 'uploadDescription' => sprintf($GLOBALS['TL_LANG']['tl_content']['dropzone']['upload'], $this->folder),
+                'controlInputField' => explode('.', $this->parseWidget)[1]
             )
         );
 

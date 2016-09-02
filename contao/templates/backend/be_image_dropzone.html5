@@ -11,14 +11,32 @@
 
 <script>
     var dropZoneImage = new Dropzone('div#dropzone-image', {
-        url: '<?= $this->url ?>',
+        url: <?= $this->url ?>,
         previewsContainer: '.dropzone-previews',
-        maxFilesize: <?= $this->maxFileSize ?>,
-        acceptedFiles: '<?= $this->acceptedFiles ?>',
+        maxFiles: <?= $this->maxFiles ?>,
         uploadMultiple: <?= $this->uploadMultiple ?>
-    }).on('processing', function () {
-        $$(".dz-message").setStyle('padding', '12px 18px 0');
-    }).on('complete', function () {
-        location.reload();
+    }).on('sending', function (file, xmlHttpRequest, formData) {
+        AjaxRequest.displayBox('<?= $GLOBALS['TL_LANG']['MSC']['loadingData'] ?>');
+
+        formData.append('REQUEST_TOKEN', '<?= \Contao\RequestToken::get() ?>');
+        formData.append('action', 'dropZoneAjax');
+    }).on('success', function (file, response, progressEvent) {
+        if (response.status === 'confirmed') {
+            var controlField = document.getElementById('<?= 'ctrl_' .  $this->controlInputField ?>');
+            var parentElement = controlField.parentElement;
+
+            parentElement.innerHTML = response.content;
+        }
+
+        var message = document.createElement('div');
+        message.innerHTML = response.message;
+        file.previewTemplate.appendChild(message);
+
+        if (response.status === 'error') {
+            var errorMessage = message.querySelector('.tl_error').innerHTML;
+            this.emit("error", file, errorMessage);
+        }
+
+        AjaxRequest.hideBox();
     });
 </script>

@@ -16,11 +16,13 @@ use Contao\FileTree;
 
 class ContentSingleSourceController extends AbstractController
 {
-    protected $parseWidget = 'content.singleSRC';
+    protected $parseWidget = 'tl_content.singleSRC';
 
     protected $folder = 'files/tiny_templates';
 
     protected $uploadMultiple = 'false';
+
+    protected $maxFiles = 1;
 
     public function injectDropZone($buffer, FileTree $widget)
     {
