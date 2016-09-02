@@ -24,7 +24,7 @@ use Contao\RequestToken;
 
 class UploadController
 {
-    public function parse($action)
+    public function upload($action)
     {
         if ($action !== 'dropZoneAjax'
             || !Input::get('dropfield')

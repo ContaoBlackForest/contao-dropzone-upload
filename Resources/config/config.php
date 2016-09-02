@@ -20,5 +20,5 @@ $GLOBALS['TL_HOOKS']['loadDataContainer'][] = array(
 
 $GLOBALS['TL_HOOKS']['executePreActions'][] = array(
     'ContaoBlackForest\DropZoneBundle\Controller\UploadController',
-    'parse'
+    'upload'
 );
