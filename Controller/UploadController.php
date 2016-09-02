@@ -34,7 +34,7 @@ class UploadController
             return;
         }
 
-        $this->parseFiles();
+        $this->parseGlobalUploadFiles();
 
         $upload  = new FileUpload();
         $uploads = $upload->uploadTo(Input::get('dropfolder'));
@@ -46,7 +46,7 @@ class UploadController
         exit;
     }
 
-    protected function parseFiles()
+    protected function parseGlobalUploadFiles()
     {
         $files = array();
 
