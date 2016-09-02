@@ -22,8 +22,18 @@ use Contao\Input;
 use Contao\Message;
 use Contao\RequestToken;
 
+/**
+ * The upload controller.
+ */
 class UploadController
 {
+    /**
+     * Upload the file to the upload folder.
+     *
+     * @param string $action The action.
+     *
+     * @return void
+     */
     public function upload($action)
     {
         if ($action !== 'dropZoneAjax'
@@ -46,6 +56,11 @@ class UploadController
         exit;
     }
 
+    /**
+     * Parse global upload files.
+     *
+     * @return void
+     */
     protected function parseGlobalUploadFiles()
     {
         $files = array();
@@ -63,6 +78,13 @@ class UploadController
         $_FILES['files'] = $files;
     }
 
+    /**
+     * Get response information.
+     *
+     * @param array $uploads The uploads.
+     *
+     * @return array
+     */
     protected function getResponse(array $uploads)
     {
         $content = '';
