@@ -21,6 +21,8 @@ use Contao\FileUpload;
 use Contao\Input;
 use Contao\Message;
 use Contao\RequestToken;
+use ContaoBlackForest\DropZoneBundle\Event\GetFileTreeWidgetEvent;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * The upload controller.
@@ -91,24 +93,20 @@ class UploadController
         $status  = 'error';
 
         if (count($uploads) > 0) {
+            global $container;
+
+            /** @var EventDispatcherInterface $eventDispatcher */
+            $eventDispatcher = $container['event-dispatcher'];
+
             $file = FilesModel::findByPath($uploads[0]);
 
             $table = Input::get('table');
             Controller::loadDataContainer($table);
-            $dc = new DC_Table($table);
-            $dc->__set('strField', Input::get('dropfield'));
 
-            $widget  = new FileTree(
-                FileTree::getAttributesFromDca(
-                    $GLOBALS['TL_DCA'][$dc->table]['fields'][$dc->field],
-                    $dc->field,
-                    serialize(array($file->uuid)),
-                    Input::get('dropfield'),
-                    $dc->table,
-                    $dc
-                )
-            );
-            $content = $widget->generate();
+            $event = new GetFileTreeWidgetEvent($eventDispatcher, $table, Input::get('dropfield'), $file);
+            $eventDispatcher->dispatch(GetFileTreeWidgetEvent::NAME, $event);
+
+            $content = $event->getWidget()->generate();
 
             $status = 'confirmed';
         }
