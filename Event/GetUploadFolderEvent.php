@@ -46,7 +46,7 @@ class GetUploadFolderEvent extends Event
     protected $uploadFolder;
 
     /**
-     * GetPropertyTableEvent constructor.
+     * GetUploadFolderEvent constructor.
      *
      * @param EventDispatcherInterface $eventDispatcher The event dispatcher.
      * @param string                   $dataProvider    The data provider.

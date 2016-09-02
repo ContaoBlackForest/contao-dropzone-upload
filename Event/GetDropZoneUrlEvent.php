@@ -51,7 +51,7 @@ class GetDropZoneUrlEvent extends Event
     protected $url;
 
     /**
-     * GetPropertyTableEvent constructor.
+     * GetDropZoneUrlEvent constructor.
      *
      * @param EventDispatcherInterface $eventDispatcher The event dispatcher.
      * @param string                   $dataProvider    The data provider.
