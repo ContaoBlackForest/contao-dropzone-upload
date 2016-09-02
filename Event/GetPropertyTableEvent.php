@@ -16,14 +16,14 @@ use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
- * Initialize table event for DC_TABLE data container.
+ * Get property table event for DC_TABLE data container.
  */
-class InitializeTableEvent extends Event
+class GetPropertyTableEvent extends Event
 {
     /**
      * @var string The event name.
      */
-    const NAME = 'ContaoBlackForest\DropZoneBundle\Event\InitializeTableEvent';
+    const NAME = 'ContaoBlackForest\DropZoneBundle\Event\GetPropertyTableEvent';
 
     /**
      * @var EventDispatcherInterface The event dispatcher.
@@ -41,7 +41,7 @@ class InitializeTableEvent extends Event
     protected $property;
 
     /**
-     * InitializeTableEvent constructor.
+     * GetPropertyTableEvent constructor.
      *
      * @param EventDispatcherInterface $eventDispatcher The event dispatcher.
      * @param string                   $dataProvider    The data provider.

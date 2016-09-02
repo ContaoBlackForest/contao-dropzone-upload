@@ -12,7 +12,7 @@
 
 namespace ContaoBlackForest\DropZoneBundle\DataContainer\Table;
 
-use ContaoBlackForest\DropZoneBundle\Event\InitializeTableEvent;
+use ContaoBlackForest\DropZoneBundle\Event\GetPropertyTableEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class Content implements EventSubscriberInterface
@@ -39,7 +39,7 @@ class Content implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            InitializeTableEvent::NAME => array(
+            GetPropertyTableEvent::NAME => array(
                 array('initializeTable')
             )
         );
@@ -48,11 +48,11 @@ class Content implements EventSubscriberInterface
     /**
      * Initialize for table tl_content and the property single source.
      *
-     * @param InitializeTableEvent $event The event.
+     * @param GetPropertyTableEvent $event The event.
      *
      * @return void
      */
-    public function InitializeTable(InitializeTableEvent $event)
+    public function InitializeTable(GetPropertyTableEvent $event)
     {
         if ($event->getDataProvider() !== 'tl_content'
             || !array_key_exists('singleSRC', $GLOBALS['TL_DCA'][$event->getDataProvider()]['fields'])

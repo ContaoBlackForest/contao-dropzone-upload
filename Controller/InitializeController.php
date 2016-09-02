@@ -12,7 +12,7 @@
 
 namespace ContaoBlackForest\DropZoneBundle\Controller;
 
-use ContaoBlackForest\DropZoneBundle\Event\InitializeTableEvent;
+use ContaoBlackForest\DropZoneBundle\Event\GetPropertyTableEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -34,8 +34,8 @@ class InitializeController
         /** @var EventDispatcherInterface $eventDispatcher */
         $eventDispatcher = $container['event-dispatcher'];
 
-        $event = new InitializeTableEvent($eventDispatcher, $dataProvider);
-        $eventDispatcher->dispatch(InitializeTableEvent::NAME, $event);
+        $event = new GetPropertyTableEvent($eventDispatcher, $dataProvider);
+        $eventDispatcher->dispatch(GetPropertyTableEvent::NAME, $event);
 
         if (!$event->getProperty()) {
             return;
@@ -47,11 +47,11 @@ class InitializeController
     /**
      * Initialize widget load callback for property.
      *
-     * @param InitializeTableEvent $event The event.
+     * @param GetPropertyTableEvent $event The event.
      *
      * @return void
      */
-    protected function initializeWidgetLoadCallback(InitializeTableEvent $event)
+    protected function initializeWidgetLoadCallback(GetPropertyTableEvent $event)
     {
         if (!$this->hasBackendUserUploaderDropZone()
             || !array_key_exists($event->getDataProvider(), $GLOBALS['TL_DCA'])
