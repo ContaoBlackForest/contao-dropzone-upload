@@ -54,8 +54,11 @@ class Content implements EventSubscriberInterface
      */
     public function InitializeTable(GetPropertyTableEvent $event)
     {
-        if ($event->getDataProvider() !== 'tl_content'
-            || !array_key_exists('singleSRC', $GLOBALS['TL_DCA'][$event->getDataProvider()]['fields'])
+        $dataProvider = $event->getDataProvider();
+
+        if ($dataProvider !== 'tl_content'
+            || !array_key_exists('singleSRC', $GLOBALS['TL_DCA'][$dataProvider]['fields'])
+            || $GLOBALS['TL_DCA'][$dataProvider]['config']['dataContainer'] !== 'Table'
         ) {
             return;
         }
