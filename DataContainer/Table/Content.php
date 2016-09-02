@@ -46,7 +46,8 @@ class Content implements EventSubscriberInterface
     {
         return array(
             GetPropertyTableEvent::NAME => array(
-                array('initializeTable')
+                array('InitializeTableForPropertySingleSource'),
+                array('InitializeTableForPropertyMultiSource')
             ),
 
             GetUploadFolderEvent::NAME => array(
@@ -66,7 +67,7 @@ class Content implements EventSubscriberInterface
      *
      * @return void
      */
-    public function InitializeTable(GetPropertyTableEvent $event)
+    public function InitializeTableForPropertySingleSource(GetPropertyTableEvent $event)
     {
         $dataProvider = $event->getDataProvider();
 
@@ -78,6 +79,27 @@ class Content implements EventSubscriberInterface
         }
 
         $event->setProperty('singleSRC');
+    }
+
+    /**
+     * Initialize for table tl_content and the property multi source.
+     *
+     * @param GetPropertyTableEvent $event The event.
+     *
+     * @return void
+     */
+    public function InitializeTableForPropertyMultiSource(GetPropertyTableEvent $event)
+    {
+        $dataProvider = $event->getDataProvider();
+
+        if ($dataProvider !== 'tl_content'
+            || !array_key_exists('multiSRC', $GLOBALS['TL_DCA'][$dataProvider]['fields'])
+            || $GLOBALS['TL_DCA'][$dataProvider]['config']['dataContainer'] !== 'Table'
+        ) {
+            return;
+        }
+
+        $event->setProperty('multiSRC');
     }
 
     /**

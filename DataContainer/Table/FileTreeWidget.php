@@ -12,8 +12,11 @@
 
 namespace ContaoBlackForest\DropZoneBundle\DataContainer\Table;
 
+use Contao\ContentModel;
 use Contao\DC_Table;
 use Contao\FileTree;
+use Contao\Input;
+use Contao\Model;
 use ContaoBlackForest\DropZoneBundle\Event\GetFileTreeWidgetEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -70,17 +73,37 @@ class FileTreeWidget implements EventSubscriberInterface
         $dc           = new DC_Table($dataProvider);
         $dc->strField = $property;
 
-        $event->setWidget(
+        $value = serialize(array($event->getUploadFile()->uuid));
+
+        $widget =
             new FileTree(
                 FileTree::getAttributesFromDca(
                     $GLOBALS['TL_DCA'][$dataProvider]['fields'][$property],
                     $property,
-                    serialize(array($event->getUploadFile()->uuid)),
+                    $value,
                     $property,
                     $dataProvider,
                     $dc
                 )
-            )
-        );
+            );
+
+        if (array_key_exists('eval', $GLOBALS['TL_DCA']['tl_content']['fields']['multiSRC'])
+            && array_key_exists('orderField', $GLOBALS['TL_DCA']['tl_content']['fields']['multiSRC']['eval'])
+        ) {
+            $model  = Model::getClassFromTable($dataProvider);
+            $result = $model::findByPk(Input::get('id'));
+
+
+            $widget->value = serialize(
+                array_merge(
+                    unserialize($result->$property),
+                    array($event->getUploadFile()->uuid)
+                )
+            );
+
+            $widget->isGallery = true;
+        }
+
+        $event->setWidget($widget);
     }
 }
