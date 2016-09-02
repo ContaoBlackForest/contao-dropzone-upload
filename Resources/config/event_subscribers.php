@@ -12,8 +12,10 @@
 
 use ContaoBlackForest\DropZoneBundle\DataContainer\Description;
 use ContaoBlackForest\DropZoneBundle\DataContainer\Table\Content;
+use ContaoBlackForest\DropZoneBundle\DataContainer\Table\FileTreeWidget;
 
-return array(
+return [
     new Content(),
-    new Description()
-);
+    new Description(),
+    new FileTreeWidget()
+];
