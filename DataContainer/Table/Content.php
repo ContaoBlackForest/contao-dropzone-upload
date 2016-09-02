@@ -12,7 +12,10 @@
 
 namespace ContaoBlackForest\DropZoneBundle\DataContainer\Table;
 
+use Contao\Environment;
+use ContaoBlackForest\DropZoneBundle\Event\GetDropZoneUrlEvent;
 use ContaoBlackForest\DropZoneBundle\Event\GetPropertyTableEvent;
+use ContaoBlackForest\DropZoneBundle\Event\GetUploadFolderEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -44,6 +47,14 @@ class Content implements EventSubscriberInterface
         return array(
             GetPropertyTableEvent::NAME => array(
                 array('initializeTable')
+            ),
+
+            GetUploadFolderEvent::NAME => array(
+                array('getUploadFolder')
+            ),
+
+            GetDropZoneUrlEvent::NAME => array(
+                array('getDropZoneUrl')
             )
         );
     }
@@ -67,5 +78,41 @@ class Content implements EventSubscriberInterface
         }
 
         $event->setProperty('singleSRC');
+    }
+
+    /**
+     * Get upload folder.
+     *
+     * @param GetUploadFolderEvent $event The event.
+     *
+     * @return void
+     */
+    public function getUploadFolder(GetUploadFolderEvent $event)
+    {
+        if ($event->getDataProvider() !== 'tl_content') {
+            return;
+        }
+
+        $event->setUploadFolder('files/tiny_templates');
+    }
+
+    /**
+     * Get drop zone url.
+     *
+     * @param GetDropZoneUrlEvent $event The event.
+     *
+     * @return void
+     */
+    public function getDropZoneUrl(GetDropZoneUrlEvent $event)
+    {
+        if ($event->getDataProvider() !== 'tl_content') {
+            return;
+        }
+
+        $event->setUrl(
+            Environment::get('request') .
+            '&dropfield=' . $event->getProperty() .
+            '&dropfolder=' . $event->getUploadFolder()
+        );
     }
 }
