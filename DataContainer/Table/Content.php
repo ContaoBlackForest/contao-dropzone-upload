@@ -15,6 +15,9 @@ namespace ContaoBlackForest\DropZoneBundle\DataContainer\Table;
 use ContaoBlackForest\DropZoneBundle\Event\GetPropertyTableEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
+/**
+ * Data container table content subscriber.
+ */
 class Content implements EventSubscriberInterface
 {
 
