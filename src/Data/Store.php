@@ -45,12 +45,7 @@ class Store
         $upload  = new FileUpload();
         $uploads = $upload->uploadTo(Input::get('dropfolder'));
 
-        //$modelClass = Model::getClassFromTable(Input::get('table'));
-        //$result     = $modelClass::findOneById(Input::get('id'));
-
         Dbafs::syncFiles();
-
-        //$this->storeSingleSource($result, $uploads[0]);
 
         header('Content-Type: application/json');
         echo json_encode($this->getResponse($uploads));
@@ -97,26 +92,5 @@ class Store
         Message::reset();
 
         return array('content' => $content, 'message' => $message, 'status' => $status);
-    }
-
-    protected function storeSingleSource($model, $file)
-    {
-        if (Input::get('dropfield') !== 'singleSRC') {
-            return;
-        }
-
-        $fileModel = FilesModel::findMultipleFilesByFolder(Input::get('dropfolder'));
-        if (!$fileModel) {
-            return;
-        }
-
-        while ($fileModel->next()) {
-            if ($fileModel->path !== $file) {
-                continue;
-            }
-
-            $model->singleSRC = $fileModel->uuid;
-            $model->save();
-        }
     }
 }
