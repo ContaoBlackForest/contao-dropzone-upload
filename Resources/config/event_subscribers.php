@@ -10,8 +10,10 @@
  * @copyright Copyright 2014-2016 ContaoBlackForest
  */
 
+use ContaoBlackForest\DropZoneBundle\DataContainer\Description;
 use ContaoBlackForest\DropZoneBundle\DataContainer\Table\Content;
 
 return array(
-    new Content()
+    new Content(),
+    new Description()
 );
