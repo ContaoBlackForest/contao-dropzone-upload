@@ -13,6 +13,11 @@
 /**
  * Contao hooks
  */
+$GLOBALS['TL_HOOKS']['loadDataContainer'][] = array(
+    'ContaoBlackForest\DropZoneBundle\Controller\InitializeController',
+    'initializePropertyLoadCallback'
+);
+
 $GLOBALS['TL_HOOKS']['executePreActions'][] = array(
     'ContaoBlackForest\DropZoneBundle\Data\Store',
     'parse'

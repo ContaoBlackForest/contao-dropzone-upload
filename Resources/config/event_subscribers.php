@@ -10,10 +10,10 @@
  * @copyright Copyright 2014-2016 ContaoBlackForest
  */
 
-/**
- * inject the drop zone for content elements
- */
-$GLOBALS['TL_DCA']['tl_content']['fields']['singleSRC']['load_callback'][] = array(
-    'ContaoBlackForest\DropZoneBundle\Controller\ContentSingleSourceController',
-    'initializeParseWidget'
+use ContaoBlackForest\DropZoneBundle\DataContainer\Description;
+use ContaoBlackForest\DropZoneBundle\DataContainer\Table\Content;
+
+return array(
+    new Content(),
+    new Description()
 );
