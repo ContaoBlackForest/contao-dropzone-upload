@@ -44,11 +44,6 @@ class Store
 
         $upload  = new FileUpload();
         $uploads = $upload->uploadTo(Input::get('dropfolder'));
-        /*if (empty($uploads)) {
-            header('HTTP/1.1 406 Not Acceptable');
-
-            exit;
-        }*/
 
         //$modelClass = Model::getClassFromTable(Input::get('table'));
         //$result     = $modelClass::findOneById(Input::get('id'));
