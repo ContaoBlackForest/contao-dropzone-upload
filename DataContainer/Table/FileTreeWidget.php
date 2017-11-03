@@ -87,8 +87,8 @@ class FileTreeWidget implements EventSubscriberInterface
                 )
             );
 
-        if (array_key_exists('eval', $GLOBALS['TL_DCA']['tl_content']['fields']['multiSRC'])
-            && array_key_exists('orderField', $GLOBALS['TL_DCA']['tl_content']['fields']['multiSRC']['eval'])
+        if (array_key_exists('eval', $GLOBALS['TL_DCA'][$dataProvider]['fields'][$property])
+            && array_key_exists('orderField', $GLOBALS['TL_DCA'][$dataProvider]['fields'][$property]['eval'])
         ) {
             $model  = Model::getClassFromTable($dataProvider);
             $result = $model::findByPk(Input::get('id'));
