@@ -90,9 +90,9 @@ class FileTreeWidget implements EventSubscriberInterface
         if (array_key_exists('eval', $GLOBALS['TL_DCA'][$dataProvider]['fields'][$property])
             && array_key_exists('orderField', $GLOBALS['TL_DCA'][$dataProvider]['fields'][$property]['eval'])
         ) {
-            $model  = Model::getClassFromTable($dataProvider);
-            $result = $model::findByPk(Input::get('id'));
-
+            $database = Database::getInstance();
+            $result = $database->prepare("SELECT * FROM $dataProvider WHERE id=?")
+                ->execute(Input::get('id'));
 
             $widget->value = serialize(
                 array_merge(
