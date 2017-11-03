@@ -13,6 +13,7 @@
 namespace ContaoBlackForest\DropZoneBundle\DataContainer\Table;
 
 use Contao\ContentModel;
+use Contao\Database;
 use Contao\DC_Table;
 use Contao\FileTree;
 use Contao\Input;
@@ -101,7 +102,18 @@ class FileTreeWidget implements EventSubscriberInterface
                 )
             );
 
-            $widget->isGallery = true;
+            switch ($result->type) {
+                case 'gallery':
+                    $widget->isGallery = true;
+                    break;
+
+                case  'download':
+                    $widget->isDownloads = true;
+                    break;
+
+                default:
+                    break;
+            }
         }
 
         $event->setWidget($widget);
