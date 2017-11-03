@@ -12,6 +12,8 @@
 
 namespace ContaoBlackForest\DropZoneBundle\DataContainer;
 
+use Contao\Config;
+use Contao\System;
 use ContaoBlackForest\DropZoneBundle\Event\GetDropZoneDescriptionEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -48,10 +50,52 @@ class Description implements EventSubscriberInterface
         );
     }
 
+    /**
+     * Get the description for the drop zone.
+     *
+     * @param GetDropZoneDescriptionEvent $event The event.
+     *
+     * @return void
+     */
     public function getDescription(GetDropZoneDescriptionEvent $event)
     {
+        System::loadLanguageFile('tl_files');
+
         $event->setDescription(
-            sprintf($GLOBALS['TL_LANG'][$event->getDataProvider()]['dropzone']['upload'], $event->getUploadFolder())
+            sprintf(
+                '<strong>%s</strong> %s',
+                sprintf(
+                    $GLOBALS['TL_LANG'][$event->getDataProvider()]['dropzone']['upload'],
+                    $event->getUploadFolder()
+                ),
+                sprintf(
+                    $GLOBALS['TL_LANG']['tl_files']['fileupload'][1],
+                    System::getReadableSize($this->getMaximumUploadSize()),
+                    Config::get('gdMaxImgWidth') . 'x' . Config::get('gdMaxImgHeight')
+                )
+            )
         );
+    }
+
+    /**
+     * Return the maximum upload file size in bytes
+     *
+     * @return string
+     */
+    protected function getMaximumUploadSize()
+    {
+        // Get the upload_max_filesize from the php.ini
+        $uploadMaxFileSize = ini_get('upload_max_filesize');
+
+        // Convert the value to bytes
+        if (stripos($uploadMaxFileSize, 'K') !== false) {
+            $uploadMaxFileSize = round($uploadMaxFileSize * 1024);
+        } elseif (stripos($uploadMaxFileSize, 'M') !== false) {
+            $uploadMaxFilesize = round($uploadMaxFileSize * 1024 * 1024);
+        } elseif (stripos($uploadMaxFileSize, 'G') !== false) {
+            $uploadMaxFileSize = round($uploadMaxFileSize * 1024 * 1024 * 1024);
+        }
+
+        return min($uploadMaxFileSize, \Config::get('maxFileSize'));
     }
 }
