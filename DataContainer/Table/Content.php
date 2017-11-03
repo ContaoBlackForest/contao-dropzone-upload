@@ -12,10 +12,13 @@
 
 namespace ContaoBlackForest\DropZoneBundle\DataContainer\Table;
 
+use Contao\Database;
 use Contao\Environment;
+use Contao\Input;
 use ContaoBlackForest\DropZoneBundle\Event\GetDropZoneUrlEvent;
 use ContaoBlackForest\DropZoneBundle\Event\GetPropertyTableEvent;
 use ContaoBlackForest\DropZoneBundle\Event\GetUploadFolderEvent;
+use Database\Result;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -23,7 +26,6 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 class Content implements EventSubscriberInterface
 {
-
     /**
      * Returns an array of event names this subscriber wants to listen to.
      *
@@ -78,7 +80,9 @@ class Content implements EventSubscriberInterface
             return;
         }
 
-        $event->setProperty('singleSRC');
+        if ($this->isPropertyActive($dataProvider, 'singleSRC')) {
+            $event->setProperty('singleSRC');
+        }
     }
 
     /**
@@ -99,7 +103,9 @@ class Content implements EventSubscriberInterface
             return;
         }
 
-        $event->setProperty('multiSRC');
+        if ($this->isPropertyActive($dataProvider, 'multiSRC')) {
+            $event->setProperty('multiSRC');
+        }
     }
 
     /**
@@ -136,5 +142,87 @@ class Content implements EventSubscriberInterface
             '&dropfield=' . $event->getProperty() .
             '&dropfolder=' . $event->getUploadFolder()
         );
+    }
+
+    /**
+     * Check if the property is active in palette.
+     *
+     * @param string $dataProvider The data provider.
+     *
+     * @param string $property     The property.
+     *
+     * @return bool
+     */
+    private function isPropertyActive($dataProvider, $property)
+    {
+        $database = Database::getInstance();
+        $result   = $database->prepare("SELECT * FROM $dataProvider WHERE id=?")
+            ->execute(Input::get('id'));
+
+        $activePalette           = explode(',', $GLOBALS['TL_DCA'][$dataProvider]['palettes'][$result->type]);
+        $activePaletteProperties = $this->getPaletteProperties($activePalette);
+
+
+        if (in_array($property, $activePaletteProperties)) {
+            return true;
+        }
+
+        if ($this->findPropertyInSubPalette($property, $result, $dataProvider, $activePaletteProperties)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Get the palette properties.
+     *
+     * @param array $palette The palette.
+     *
+     * @return array
+     */
+    private function getPaletteProperties(array $palette)
+    {
+        $paletteProperties = array();
+
+        foreach ($palette as $paletteProperty) {
+            $paletteProperty = explode(';', $paletteProperty);
+            if (strpos($paletteProperty[0], '_legend}') !== false) {
+                continue;
+            }
+
+            $paletteProperties[] = $paletteProperty[0];
+        }
+
+        return $paletteProperties;
+    }
+
+    /**
+     * Find the property in a sub palette.
+     *
+     * @param string $property          The property.
+     *
+     * @param Result $result            The database result.
+     *
+     * @param string $dataProvider      The data provider.
+     *
+     * @param array  $paletteProperties The palette properties.
+     *
+     * @return bool
+     */
+    private function findPropertyInSubPalette($property, Result $result, $dataProvider, array $paletteProperties)
+    {
+        foreach ($GLOBALS['TL_DCA'][$dataProvider]['subpalettes'] as $selector => $subPalette) {
+            $subPalette = explode(',', $subPalette);
+
+            if ($result->{$selector}
+                && in_array($property, $subPalette)
+                && in_array($selector, $paletteProperties)
+            ) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
