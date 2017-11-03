@@ -71,7 +71,7 @@ class FileTreeWidget implements EventSubscriberInterface
         $property = $event->getProperty();
 
         $dc           = new DC_Table($dataProvider);
-        $dc->strField = $property;
+        $dc->field = $property;
 
         $value = serialize(array($event->getUploadFile()->uuid));
 
