@@ -110,7 +110,8 @@ class InjectController
         $dropZone = new BackendTemplate('be_image_dropzone');
         $dropZone->url =  '\'' . $dropZoneUrlEvent->getUrl() . '\'';
         $dropZone->uploadDescription = $dropZoneDescriptionEvent->getDescription();
-        $dropZone->controlInputField =  $widget->name;
+        $dropZone->controlInputField =  $widget->id;
+        $dropZone->dropzonePreviews =  'dropzone_previews_' . $widget->name;
 
         return $buffer . $dropZone->parse();
     }

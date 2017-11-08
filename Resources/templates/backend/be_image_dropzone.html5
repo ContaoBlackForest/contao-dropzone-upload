@@ -4,15 +4,15 @@
         <div class="dz-default dz-message">
             <span><?= $GLOBALS['TL_LANG']['tl_files']['dropzone'] ?></span>
         </div>
-        <div class="dropzone-previews"></div>
+        <div class="dropzone-previews" id="<?= $this->dropzonePreviews ?>"></div>
     </div>
     <p class="tl_help tl_tip" title=""><?= $this->uploadDescription ?></p>
 </div>
 
 <script>
-    var dropZoneImage = new Dropzone('div#dropzone-image', {
+    new Dropzone('div#dropzone-image', {
         url: <?= $this->url ?>,
-        previewsContainer: '.dropzone-previews',
+        previewsContainer: '#<?= $this->dropzonePreviews ?>'
     }).on('sending', function (file, xmlHttpRequest, formData) {
         AjaxRequest.displayBox('<?= $GLOBALS['TL_LANG']['MSC']['loadingData'] ?>');
 
