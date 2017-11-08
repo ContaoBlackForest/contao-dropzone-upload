@@ -96,7 +96,7 @@ class FileTreeWidget implements EventSubscriberInterface
             foreach ($GLOBALS['TL_DCA'][$dataProvider]['fields'][$property]['load_callback'] as $callback) {
                 if (is_array($callback)) {
                     $reflectionClass = new \ReflectionClass($callback[0]);
-                    $instance = $reflectionClass->newInstance();
+                    $instance        = $reflectionClass->newInstance();
 
                     $instance->{$callback[1]}($result->{$property}, $dc);
                 } elseif (is_callable($callback)) {
@@ -116,6 +116,21 @@ class FileTreeWidget implements EventSubscriberInterface
                     $dc
                 )
             );
+
+        if ((true === is_array($widget->value))
+            && (false === empty($widget->orderField))
+        ) {
+            if (false === (bool) count((array) $widget->{$widget->orderField})) {
+                $widget->{$widget->orderField} = $widget->value;
+            } elseif (true === (bool) count((array) $widget->{$widget->orderField})) {
+                $orderValue = array_merge(
+                    (array) $widget->{$widget->orderField},
+                    array($event->getUploadFile()->uuid)
+                );
+
+                $widget->{$widget->orderField} = $orderValue;
+            }
+        }
 
         $event->setWidget($widget);
     }
