@@ -80,6 +80,33 @@ class FileTreeWidget implements EventSubscriberInterface
 
 
         $value = serialize(array($event->getUploadFile()->uuid));
+        if ((true === isset($GLOBALS['TL_DCA'][$dataProvider]['fields'][$property]['eval']['multiple']))
+            && (true === $GLOBALS['TL_DCA'][$dataProvider]['fields'][$property]['eval']['multiple'])
+        ) {
+            $value = array_merge(
+                (array) unserialize($result->{$property}),
+                array($event->getUploadFile()->uuid)
+            );
+        }
+
+        if ((true === isset($GLOBALS['TL_DCA'][$dataProvider]['fields'][$property]['load_callback']))
+            && (true === (bool) count($GLOBALS['TL_DCA'][$dataProvider]['fields'][$property]['load_callback']))
+        ) {
+            foreach ($GLOBALS['TL_DCA'][$dataProvider]['fields'][$property]['load_callback'] as $callback) {
+                if (is_array($callback)) {
+                    $className   = $callback[0];
+                    $classMethod = $callback[1];
+
+                    $instance = (in_array('getInstance', get_class_methods($className))) ? call_user_func(
+                        array($className, 'getInstance')
+                    ) : new $className();
+
+                    $instance->{$classMethod}($result->{$property}, $dc);
+                } elseif (is_callable($callback)) {
+                    $callback($result->{$property}, $dc);
+                }
+            }
+        }
 
         $widget =
             new FileTree(
@@ -92,34 +119,6 @@ class FileTreeWidget implements EventSubscriberInterface
                     $dc
                 )
             );
-
-        if (array_key_exists('eval', $GLOBALS['TL_DCA'][$dataProvider]['fields'][$property])
-            && array_key_exists('orderField', $GLOBALS['TL_DCA'][$dataProvider]['fields'][$property]['eval'])
-        ) {
-            $database = Database::getInstance();
-            $result = $database->prepare("SELECT * FROM $dataProvider WHERE id=?")
-                ->execute(Input::get('id'));
-
-            $widget->value = serialize(
-                array_merge(
-                    unserialize($result->$property),
-                    array($event->getUploadFile()->uuid)
-                )
-            );
-
-            switch ($result->type) {
-                case 'gallery':
-                    $widget->isGallery = true;
-                    break;
-
-                case  'download':
-                    $widget->isDownloads = true;
-                    break;
-
-                default:
-                    break;
-            }
-        }
 
         $event->setWidget($widget);
     }
