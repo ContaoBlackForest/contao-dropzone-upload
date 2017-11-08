@@ -12,12 +12,9 @@
 
 namespace ContaoBlackForest\DropZoneBundle\DataContainer\Table;
 
-use Contao\ContentModel;
 use Contao\Database;
-use Contao\DC_Table;
 use Contao\FileTree;
 use Contao\Input;
-use Contao\Model;
 use ContaoBlackForest\DropZoneBundle\Event\GetFileTreeWidgetEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -65,14 +62,22 @@ class FileTreeWidget implements EventSubscriberInterface
     {
         $dataProvider = $event->getDataProvider();
 
-        if ($GLOBALS['TL_DCA'][$dataProvider]['config']['dataContainer'] !== 'Table') {
+        if (false === isset($GLOBALS['TL_DCA'][$dataProvider]['config']['dataContainer'])) {
             return;
         }
 
+        $dataContainer = 'DC_' . $GLOBALS['TL_DCA'][$dataProvider]['config']['dataContainer'];
+
         $property = $event->getProperty();
 
-        $dc           = new DC_Table($dataProvider);
-        $dc->field = $property;
+        $database = Database::getInstance();
+        $result   = $database->prepare("SELECT * FROM $dataProvider WHERE id=?")
+            ->execute(Input::get('id'));
+
+        $dc               = new $dataContainer($dataProvider);
+        $dc->activeRecord = $result;
+        $dc->field        = $property;
+
 
         $value = serialize(array($event->getUploadFile()->uuid));
 
