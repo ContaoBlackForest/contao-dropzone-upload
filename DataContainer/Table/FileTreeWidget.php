@@ -72,6 +72,7 @@ class FileTreeWidget implements EventSubscriberInterface
 
         $database = Database::getInstance();
         $result   = $database->prepare("SELECT * FROM $dataProvider WHERE id=?")
+            ->limit(1)
             ->execute(Input::get('id'));
 
         $dc               = new $dataContainer($dataProvider);
