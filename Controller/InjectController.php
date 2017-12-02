@@ -45,7 +45,7 @@ class InjectController
      *
      * @return void
      */
-    protected function includeDropZoneAssets()
+    private function includeDropZoneAssets()
     {
         $css        = 'assets/dropzone/' . $GLOBALS['TL_ASSETS']['DROPZONE'] . '/css/dropzone.min.css';
         $javascript = 'assets/dropzone/' . $GLOBALS['TL_ASSETS']['DROPZONE'] . '/js/dropzone.min.js';
@@ -102,16 +102,19 @@ class InjectController
         }
 
 
-        $dropZoneDescriptionEvent = new GetDropZoneDescriptionEvent($eventDispatcher, $widget->strTable, $widget->name, $uploadFolder);
+        $dropZoneDescriptionEvent =
+            new GetDropZoneDescriptionEvent($eventDispatcher, $widget->strTable, $widget->name, $uploadFolder);
         $eventDispatcher->dispatch(GetDropZoneDescriptionEvent::NAME, $dropZoneDescriptionEvent);
 
         $this->includeDropZoneAssets();
 
-        $dropZone = new BackendTemplate('be_image_dropzone');
-        $dropZone->url =  '\'' . $dropZoneUrlEvent->getUrl() . '\'';
+        $dropZone                    = new BackendTemplate('be_image_dropzone');
+        $dropZone->url               = '\'' . $dropZoneUrlEvent->getUrl() . '\'';
         $dropZone->uploadDescription = $dropZoneDescriptionEvent->getDescription();
-        $dropZone->controlInputField =  $widget->id;
-        $dropZone->dropzonePreviews =  'dropzone_previews_' . $widget->name;
+        $dropZone->controlInputField = $widget->id;
+        $dropZone->dropzonePreviews  = 'dropzone_previews_' . $widget->name;
+        $dropZone->multiple          = $widget->multiple;
+        $dropZone->orderField        = $widget->orderField;
 
         return $buffer . $dropZone->parse();
     }

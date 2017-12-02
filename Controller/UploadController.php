@@ -14,9 +14,7 @@ namespace ContaoBlackForest\DropZoneBundle\Controller;
 
 use Contao\Controller;
 use Contao\Dbafs;
-use Contao\DC_Table;
 use Contao\FilesModel;
-use Contao\FileTree;
 use Contao\FileUpload;
 use Contao\Input;
 use Contao\Message;

@@ -79,17 +79,6 @@ class FileTreeWidget implements EventSubscriberInterface
         $dc->activeRecord = $result;
         $dc->field        = $property;
 
-
-        $value = serialize(array($event->getUploadFile()->uuid));
-        if ((true === isset($GLOBALS['TL_DCA'][$dataProvider]['fields'][$property]['eval']['multiple']))
-            && (true === $GLOBALS['TL_DCA'][$dataProvider]['fields'][$property]['eval']['multiple'])
-        ) {
-            $value = array_merge(
-                (array) unserialize($result->{$property}),
-                array($event->getUploadFile()->uuid)
-            );
-        }
-
         if ((true === isset($GLOBALS['TL_DCA'][$dataProvider]['fields'][$property]['load_callback']))
             && (true === (bool) count($GLOBALS['TL_DCA'][$dataProvider]['fields'][$property]['load_callback']))
         ) {
@@ -110,26 +99,35 @@ class FileTreeWidget implements EventSubscriberInterface
                 FileTree::getAttributesFromDca(
                     $GLOBALS['TL_DCA'][$dataProvider]['fields'][$property],
                     $property,
-                    $value,
+                    '',
                     $property,
                     $dataProvider,
                     $dc
                 )
             );
 
-        if ((true === is_array($widget->value))
-            && (false === empty($widget->orderField))
+        if ((true === $widget->multiple)
+            && (true === (bool) $widget->orderField)
         ) {
-            if (false === (bool) count((array) $widget->{$widget->orderField})) {
-                $widget->{$widget->orderField} = $widget->value;
-            } elseif (true === (bool) count((array) $widget->{$widget->orderField})) {
-                $orderValue = array_merge(
-                    (array) $widget->{$widget->orderField},
-                    array($event->getUploadFile()->uuid)
-                );
-
-                $widget->{$widget->orderField} = $orderValue;
+            $value = array_map('Contao\StringUtil::uuidToBin', (array) explode(',', Input::post('fieldValue')));
+            if (!in_array($event->getUploadFile()->uuid, $value)) {
+                $value = array_merge($value, array($event->getUploadFile()->uuid));
             }
+        } else {
+            $value = $event->getUploadFile()->uuid;
+        }
+
+        $widget->value = $value;
+
+        if ((true === Input::post('multiple'))
+            && (true === (bool) Input::post('orderValue'))
+        ) {
+            $orderValue = array_map('Contao\StringUtil::uuidToBin', (array) explode(',', Input::post('orderValue')));
+            if (!in_array($event->getUploadFile()->uuid, $orderValue)) {
+                $orderValue = array_merge($orderValue, array($event->getUploadFile()->uuid));
+            }
+
+            $widget->{$widget->orderField} = $orderValue;
         }
 
         $event->setWidget($widget);
