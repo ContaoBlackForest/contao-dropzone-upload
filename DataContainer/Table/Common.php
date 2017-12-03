@@ -19,6 +19,7 @@ use Contao\Database;
 use Contao\Environment;
 use Contao\FilesModel;
 use Contao\Input;
+use Contao\NewsModel;
 use Contao\PageModel;
 use ContaoBlackForest\DropZoneBundle\Event\GetDropZoneUrlEvent;
 use ContaoBlackForest\DropZoneBundle\Event\GetUploadFolderEvent;
@@ -109,6 +110,9 @@ class Common implements EventSubscriberInterface
         }
 
         $folderUuid = $this->findPageUploadFolder($event);
+        if (!$folderUuid) {
+            $folderUuid = $this->findNewsSectionUploadFolder($event);
+        }
 
         if ($folderUuid) {
             $filesModel = FilesModel::findByUuid($folderUuid);
@@ -184,6 +188,49 @@ class Common implements EventSubscriberInterface
         }
 
         return $folderUuid;
+    }
+
+    /**
+     * Find the upload folder for the news section.
+     *
+     * @param GetUploadFolderEvent $event The event.
+     *
+     * @return mixed|null
+     */
+    private function findNewsSectionUploadFolder(GetUploadFolderEvent $event)
+    {
+        if ('news' !== Input::get('do')) {
+            return null;
+        }
+
+        if ('tl_news' === $event->getDataProvider()) {
+            $newsModel = NewsModel::findByPk(Input::get('id'));
+            if (!$newsModel) {
+                return null;
+            }
+
+            $newsArchiveModel = $newsModel->getRelated('pid');
+
+            return $newsArchiveModel->dropzoneFolder;
+        }
+
+        if ('tl_content' === $event->getDataProvider()) {
+            $contentModel = ContentModel::findByPk(Input::get('id'));
+            if (!$contentModel) {
+                return null;
+            }
+
+            $newsModel = NewsModel::findByPk($contentModel->pid);
+            if (!$newsModel) {
+                return null;
+            }
+
+            $newsArchiveModel = $newsModel->getRelated('pid');
+
+            return $newsArchiveModel->dropzoneFolder;
+        }
+
+        return null;
     }
 
     /**
