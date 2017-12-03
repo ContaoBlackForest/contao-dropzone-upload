@@ -19,16 +19,26 @@
         formData.append('REQUEST_TOKEN', '<?= \Contao\RequestToken::get() ?>');
         formData.append('action', 'dropZoneAjax');
         formData.append('multiple', <?= $this->multiple ?>);
-        formData.append('fieldValue', document.getElementById('<?= 'ctrl_' .  $this->controlInputField ?>').value);
+        formData.append('fieldValue', document.getElementById('<?= 'ctrl_' . $this->controlInputField ?>').value);
         <?php if($this->multiple): ?>
-        formData.append('orderValue', document.getElementById('<?= 'ctrl_' .  $this->orderField ?>').value);
+        formData.append('orderValue', document.getElementById('<?= 'ctrl_' . $this->orderField ?>').value);
         <?php endif; ?>
     }).on('success', function (file, response, progressEvent) {
         if (response.status === 'confirmed') {
-            var controlField = document.getElementById('<?= 'ctrl_' .  $this->controlInputField ?>');
+            var controlField = document.getElementById('<?= 'ctrl_' . $this->controlInputField ?>');
             var parentElement = controlField.parentElement;
 
             parentElement.innerHTML = response.content;
+
+            <?php if($this->multiple): ?>
+            // Isolate scripts and execute them
+            response.content = response.content.stripScripts(function (script) {
+                response.javascript = script.replace(/<!--|\/\/-->|<!\[CDATA\[\/\/>|<!]]>/g, '');
+            });
+            if (response.javascript) {
+                Browser.exec(response.javascript);
+            }
+            <?php endif; ?>
         }
 
         var message = document.createElement('div');
