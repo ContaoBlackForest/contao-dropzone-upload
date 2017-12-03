@@ -88,9 +88,7 @@ class InjectController
         $eventDispatcher->dispatch(GetUploadFolderEvent::NAME, $uploadFolderEvent);
         $uploadFolder = $uploadFolderEvent->getUploadFolder();
 
-        if (!$uploadFolder
-            || !file_exists(TL_ROOT . DIRECTORY_SEPARATOR . $uploadFolder)
-        ) {
+        if (!$uploadFolder) {
             return $buffer;
         }
 
