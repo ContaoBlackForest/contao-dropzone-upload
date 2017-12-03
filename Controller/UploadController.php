@@ -12,6 +12,7 @@
 
 namespace ContaoBlackForest\DropZoneBundle\Controller;
 
+use Contao\Config;
 use Contao\Controller;
 use Contao\Dbafs;
 use Contao\FilesModel;
@@ -52,8 +53,19 @@ class UploadController
             new Folder(Input::get('dropfolder'));
         }
 
+        // Set the allowed upload file types for the widget.
+        if (Input::post('extensions')) {
+            $uploadTypes = Config::get('uploadTypes');
+            Config::set('uploadTypes', Input::post('extensions'));
+        }
+
         $upload  = new FileUpload();
         $uploads = $upload->uploadTo(Input::get('dropfolder'));
+
+        // Reset the defined upload types.
+        if (Input::post('extensions')) {
+            Config::set('uploadTypes', $uploadTypes);
+        }
 
         Dbafs::syncFiles();
 

@@ -113,6 +113,7 @@ class InjectController
         $dropZone->dropzonePreviews  = 'dropzone_previews_' . $widget->name;
         $dropZone->multiple          = $widget->multiple ? 1 : 0;
         $dropZone->orderField        = $widget->orderField;
+        $dropZone->extensions        = $widget->extensions;
 
         return $buffer . $dropZone->parse();
     }
