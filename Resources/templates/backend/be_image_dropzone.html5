@@ -41,5 +41,6 @@
         }
 
         AjaxRequest.hideBox();
+        window.fireEvent('ajax_change');
     });
 </script>
