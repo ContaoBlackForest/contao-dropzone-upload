@@ -238,7 +238,12 @@ class Common implements EventSubscriberInterface
             $result->{Input::post('field')} = Input::post('state');
         }
 
-        $activePalette           = explode(',', $GLOBALS['TL_DCA'][$dataProvider]['palettes'][$result->type]);
+        if (array_key_exists($result->type, $GLOBALS['TL_DCA'][$dataProvider]['palettes'])) {
+            $activePalette = explode(',', $GLOBALS['TL_DCA'][$dataProvider]['palettes'][$result->type]);
+        } else {
+            $activePalette = explode(',', $GLOBALS['TL_DCA'][$dataProvider]['palettes']['default']);
+        }
+
         $activePaletteProperties = $this->getPaletteProperties($activePalette);
 
 
