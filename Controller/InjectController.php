@@ -14,6 +14,7 @@ namespace ContaoBlackForest\DropZoneBundle\Controller;
 
 use Contao\BackendTemplate;
 use Contao\Controller;
+use Contao\DataContainer;
 use Contao\FileTree;
 use Contao\Widget;
 use ContaoBlackForest\DropZoneBundle\Event\GetDropZoneDescriptionEvent;
@@ -29,13 +30,15 @@ class InjectController
     /**
      * Initialize parse widget hook.
      *
-     * @param $value mixed The widget value.
+     * @param               $value mixed The widget value.
+     *
+     * @param DataContainer $dc    The data container.
      *
      * @return mixed The widget value.
      */
-    public function initializeParseWidget($value)
+    public function initializeParseWidget($value, DataContainer $dc)
     {
-        $GLOBALS['TL_HOOKS']['parseWidget'][] = array(get_class($this), 'injectDropZone');
+        $GLOBALS['TL_HOOKS']['parseWidget'][$dc->table . '__' . $dc->field] = array(get_class($this), 'injectDropZone');
 
         return $value;
     }
@@ -69,6 +72,7 @@ class InjectController
      * Inject the drop zone.
      *
      * @param string $buffer The widget string.
+     *
      * @param Widget $widget The widget.
      *
      * @return string
@@ -78,6 +82,10 @@ class InjectController
         if (!$widget instanceof FileTree) {
             return $buffer;
         }
+
+        // Unset the hook parse widget for this property.
+        $dc = $widget->dataContainer;
+        unset($GLOBALS['TL_HOOKS']['parseWidget'][$dc->table . '__' . $dc->field]);
 
         global $container;
 
