@@ -234,6 +234,10 @@ class Common implements EventSubscriberInterface
         $result   = $database->prepare("SELECT * FROM $dataProvider WHERE id=?")
             ->execute(Input::get('id'));
 
+        if ('toggleSubpalette' === Input::post('action')) {
+            $result->{Input::post('field')} = Input::post('state');
+        }
+
         $activePalette           = explode(',', $GLOBALS['TL_DCA'][$dataProvider]['palettes'][$result->type]);
         $activePaletteProperties = $this->getPaletteProperties($activePalette);
 
