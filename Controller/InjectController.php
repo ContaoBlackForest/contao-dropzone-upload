@@ -79,13 +79,15 @@ class InjectController
      */
     public function injectDropZone($buffer, Widget $widget)
     {
-        if (!$widget instanceof FileTree) {
-            return $buffer;
-        }
-
         // Unset the hook parse widget for this property.
         $dc = $widget->dataContainer;
         unset($GLOBALS['TL_HOOKS']['parseWidget'][$dc->table . '__' . $dc->field]);
+
+        if (!$widget instanceof FileTree
+            || !$widget->extensions
+        ) {
+            return $buffer;
+        }
 
         global $container;
 
