@@ -49,7 +49,7 @@
   "extra": {
     "contao": {
       "sources": {
-        "Resources": "system/modules/dropzone-upload"
+        "Resources/contao": "system/modules/dropzone-upload"
       }
     },
     "branch-alias": {
