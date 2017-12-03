@@ -65,7 +65,7 @@ class Description implements EventSubscriberInterface
             sprintf(
                 '<strong>%s</strong> %s',
                 sprintf(
-                    $GLOBALS['TL_LANG'][$event->getDataProvider()]['dropzone']['upload'],
+                    $GLOBALS['TL_LANG']['MSC']['dropzone']['upload'],
                     $event->getUploadFolder()
                 ),
                 sprintf(
