@@ -16,6 +16,7 @@ use Contao\Controller;
 use Contao\Dbafs;
 use Contao\FilesModel;
 use Contao\FileUpload;
+use Contao\Folder;
 use Contao\Input;
 use Contao\Message;
 use Contao\RequestToken;
@@ -45,6 +46,11 @@ class UploadController
         }
 
         $this->parseGlobalUploadFiles();
+
+        if (!is_dir(TL_ROOT . '/' . Input::get('dropfolder')))
+        {
+            new Folder(Input::get('dropfolder'));
+        }
 
         $upload  = new FileUpload();
         $uploads = $upload->uploadTo(Input::get('dropfolder'));
