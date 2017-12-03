@@ -12,10 +12,14 @@
 
 namespace ContaoBlackForest\DropZoneBundle\DataContainer\Table;
 
+use Contao\ArticleModel;
 use Contao\BackendUser;
+use Contao\ContentModel;
 use Contao\Database;
 use Contao\Environment;
+use Contao\FilesModel;
 use Contao\Input;
+use Contao\PageModel;
 use ContaoBlackForest\DropZoneBundle\Event\GetDropZoneUrlEvent;
 use ContaoBlackForest\DropZoneBundle\Event\GetUploadFolderEvent;
 use ContaoBlackForest\DropZoneBundle\Event\InitializeDropZoneForPropertyEvent;
@@ -104,7 +108,20 @@ class Common implements EventSubscriberInterface
             return;
         }
 
-        $event->setUploadFolder('files/dropzone_upload');
+        $folderUuid = $this->findPageUploadFolder($event);
+
+        if ($folderUuid) {
+            $filesModel = FilesModel::findByUuid($folderUuid);
+            if ($filesModel) {
+                $uploadFolder = $filesModel->path;
+            }
+        }
+
+        if (!$uploadFolder) {
+            return;
+        }
+
+        $event->setUploadFolder($uploadFolder);
     }
 
     /**
@@ -130,6 +147,46 @@ class Common implements EventSubscriberInterface
     }
 
     /**
+     * Find the uploader page upload folder.
+     *
+     * @param GetUploadFolderEvent $event The event.
+     *
+     * @return mixed|null
+     */
+    private function findPageUploadFolder(GetUploadFolderEvent $event)
+    {
+        if (('tl_content' !== $event->getDataProvider())
+            || ('tl_article' !== $GLOBALS['TL_DCA'][$event->getDataProvider()]['config']['ptable'])
+        ) {
+            return null;
+        }
+
+        $contentModel = ContentModel::findByPk(Input::get('id'));
+        $articleModel = ArticleModel::findByPk($contentModel->pid);
+        $pageModel    = $articleModel->getRelated('pid');
+
+        $folderUuid = null;
+        if (!$pageModel->dropzoneFolder) {
+            $pageModel->loadDetails();
+
+            if (count($pageModel->trail)) {
+                foreach ($pageModel->trail as $pageId) {
+                    $trailPageModel = PageModel::findByPk($pageId);
+                    if (!$trailPageModel->dropzoneFolder) {
+                        continue;
+                    }
+
+                    $folderUuid = $trailPageModel->dropzoneFolder;
+                }
+            }
+        } else {
+            $folderUuid = $pageModel->dropzoneFolder;
+        }
+
+        return $folderUuid;
+    }
+
+    /**
      * Has backend user configure uploader drop zone.
      *
      * @return bool
@@ -148,7 +205,7 @@ class Common implements EventSubscriberInterface
      *
      * @param string $propertyName The propery name.
      *
-     *                             @return void
+     * @return void
      */
     private function addDropZoneToProperty($dataProvider, $propertyName)
     {
