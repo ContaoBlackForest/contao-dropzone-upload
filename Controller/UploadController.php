@@ -116,7 +116,7 @@ class UploadController
 
             $file = FilesModel::findByPath($uploads[0]);
 
-            $table = Input::get('table');
+            $table = Input::post('table');
             Controller::loadDataContainer($table);
 
             $event = new GetFileTreeWidgetEvent($eventDispatcher, $table, Input::get('dropfield'), $file);

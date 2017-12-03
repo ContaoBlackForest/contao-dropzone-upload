@@ -80,8 +80,7 @@ class InjectController
     public function injectDropZone($buffer, Widget $widget)
     {
         // Unset the hook parse widget for this property.
-        $dc = $widget->dataContainer;
-        unset($GLOBALS['TL_HOOKS']['parseWidget'][$dc->table . '__' . $dc->field]);
+        unset($GLOBALS['TL_HOOKS']['parseWidget'][$widget->strTable . '__' . $widget->name]);
 
         if (!$widget instanceof FileTree
             || !$widget->extensions
@@ -124,6 +123,7 @@ class InjectController
         $dropZone->multiple          = $widget->multiple ? 1 : 0;
         $dropZone->orderField        = $widget->orderField;
         $dropZone->extensions        = $widget->extensions;
+        $dropZone->table             = $widget->strTable;
 
         return $buffer . $dropZone->parse();
     }

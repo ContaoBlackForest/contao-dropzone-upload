@@ -18,6 +18,7 @@
 
         formData.append('REQUEST_TOKEN', '<?= \Contao\RequestToken::get() ?>');
         formData.append('action', 'dropZoneAjax');
+        formData.append('table', '<?= $this->table ?>');
         formData.append('multiple', <?= $this->multiple ?>);
         formData.append('extensions', '<?= $this->extensions ?>');
         formData.append('fieldValue', document.getElementById('<?= 'ctrl_' . $this->controlInputField ?>').value);
