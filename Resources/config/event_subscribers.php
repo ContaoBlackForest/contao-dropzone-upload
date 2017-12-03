@@ -11,11 +11,11 @@
  */
 
 use ContaoBlackForest\DropZoneBundle\DataContainer\Description;
-use ContaoBlackForest\DropZoneBundle\DataContainer\Table\Content;
+use ContaoBlackForest\DropZoneBundle\DataContainer\Table\Common;
 use ContaoBlackForest\DropZoneBundle\DataContainer\Table\FileTreeWidget;
 
-return [
-    new Content(),
+return array(
+    new Common(),
     new Description(),
     new FileTreeWidget()
-];
+);

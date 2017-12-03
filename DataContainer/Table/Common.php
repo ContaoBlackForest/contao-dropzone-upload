@@ -12,19 +12,20 @@
 
 namespace ContaoBlackForest\DropZoneBundle\DataContainer\Table;
 
+use Contao\BackendUser;
 use Contao\Database;
 use Contao\Environment;
 use Contao\Input;
 use ContaoBlackForest\DropZoneBundle\Event\GetDropZoneUrlEvent;
-use ContaoBlackForest\DropZoneBundle\Event\GetPropertyTableEvent;
 use ContaoBlackForest\DropZoneBundle\Event\GetUploadFolderEvent;
+use ContaoBlackForest\DropZoneBundle\Event\InitializeDropZoneForPropertyEvent;
 use Database\Result;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * Data container table content subscriber.
+ * Data container table common subscriber.
  */
-class Content implements EventSubscriberInterface
+class Common implements EventSubscriberInterface
 {
     /**
      * Returns an array of event names this subscriber wants to listen to.
@@ -47,9 +48,8 @@ class Content implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            GetPropertyTableEvent::NAME => array(
-                array('InitializeTableForPropertySingleSource'),
-                array('InitializeTableForPropertyMultiSource')
+            InitializeDropZoneForPropertyEvent::NAME => array(
+                array('initialize')
             ),
 
             GetUploadFolderEvent::NAME => array(
@@ -63,48 +63,29 @@ class Content implements EventSubscriberInterface
     }
 
     /**
-     * Initialize for table tl_content and the property single source.
+     * Initialize the dropzone for all properties that has the widget of fileTree for the datacontainer table.
      *
-     * @param GetPropertyTableEvent $event The event.
+     * @param InitializeDropZoneForPropertyEvent $event The event.
      *
      * @return void
      */
-    public function InitializeTableForPropertySingleSource(GetPropertyTableEvent $event)
+    public function initialize(InitializeDropZoneForPropertyEvent $event)
     {
-        $dataProvider = $event->getDataProvider();
-
-        if ($dataProvider !== 'tl_content'
-            || !array_key_exists('singleSRC', $GLOBALS['TL_DCA'][$dataProvider]['fields'])
-            || $GLOBALS['TL_DCA'][$dataProvider]['config']['dataContainer'] !== 'Table'
+        if (!$this->hasBackendUserUploaderDropZone()
+            || !isset($GLOBALS['TL_DCA'][$event->getDataProvider()])
+            || 'Table' !== $GLOBALS['TL_DCA'][$event->getDataProvider()]['config']['dataContainer']
         ) {
             return;
         }
 
-        if ($this->isPropertyActive($dataProvider, 'singleSRC')) {
-            $event->setProperty('singleSRC');
-        }
-    }
+        foreach ($GLOBALS['TL_DCA'][$event->getDataProvider()]['fields'] as $propertyName => $propertyConfig) {
+            if (!isset($propertyConfig['inputType'])
+                || ('fileTree' !== $propertyConfig['inputType'])
+            ) {
+                continue;
+            }
 
-    /**
-     * Initialize for table tl_content and the property multi source.
-     *
-     * @param GetPropertyTableEvent $event The event.
-     *
-     * @return void
-     */
-    public function InitializeTableForPropertyMultiSource(GetPropertyTableEvent $event)
-    {
-        $dataProvider = $event->getDataProvider();
-
-        if ($dataProvider !== 'tl_content'
-            || !array_key_exists('multiSRC', $GLOBALS['TL_DCA'][$dataProvider]['fields'])
-            || $GLOBALS['TL_DCA'][$dataProvider]['config']['dataContainer'] !== 'Table'
-        ) {
-            return;
-        }
-
-        if ($this->isPropertyActive($dataProvider, 'multiSRC')) {
-            $event->setProperty('multiSRC');
+            $this->addDropZoneToProperty($event->getDataProvider(), $propertyName);
         }
     }
 
@@ -117,11 +98,13 @@ class Content implements EventSubscriberInterface
      */
     public function getUploadFolder(GetUploadFolderEvent $event)
     {
-        if ($event->getDataProvider() !== 'tl_content') {
+        if (!isset($GLOBALS['TL_DCA'][$event->getDataProvider()])
+            || ('Table' !== $GLOBALS['TL_DCA'][$event->getDataProvider()]['config']['dataContainer'])
+        ) {
             return;
         }
 
-        $event->setUploadFolder('files/tiny_templates');
+        $event->setUploadFolder('files/dropzone_upload');
     }
 
     /**
@@ -133,7 +116,9 @@ class Content implements EventSubscriberInterface
      */
     public function getDropZoneUrl(GetDropZoneUrlEvent $event)
     {
-        if ($event->getDataProvider() !== 'tl_content') {
+        if (!isset($GLOBALS['TL_DCA'][$event->getDataProvider()])
+            || ('Table' !== $GLOBALS['TL_DCA'][$event->getDataProvider()]['config']['dataContainer'])
+        ) {
             return;
         }
 
@@ -141,6 +126,39 @@ class Content implements EventSubscriberInterface
             Environment::get('request') .
             '&dropfield=' . $event->getProperty() .
             '&dropfolder=' . $event->getUploadFolder()
+        );
+    }
+
+    /**
+     * Has backend user configure uploader drop zone.
+     *
+     * @return bool
+     */
+    private function hasBackendUserUploaderDropZone()
+    {
+        $user = BackendUser::getInstance();
+
+        return $user->uploader === 'DropZone';
+    }
+
+    /**
+     * Add the dropzone to the property.
+     *
+     * @param string $dataProvider The data provider name.
+     *
+     * @param string $propertyName The propery name.
+     *
+     *                             @return void
+     */
+    private function addDropZoneToProperty($dataProvider, $propertyName)
+    {
+        if (!$this->isPropertyActive($dataProvider, $propertyName)) {
+            return;
+        }
+
+        $GLOBALS['TL_DCA'][$dataProvider]['fields'][$propertyName]['load_callback'][] = array(
+            'ContaoBlackForest\DropZoneBundle\Controller\InjectController',
+            'initializeParseWidget'
         );
     }
 
@@ -212,6 +230,10 @@ class Content implements EventSubscriberInterface
      */
     private function findPropertyInSubPalette($property, Result $result, $dataProvider, array $paletteProperties)
     {
+        if (!isset($GLOBALS['TL_DCA'][$dataProvider]['subpalettes'])) {
+            return true;
+        }
+
         foreach ($GLOBALS['TL_DCA'][$dataProvider]['subpalettes'] as $selector => $subPalette) {
             $subPalette = explode(',', $subPalette);
 
