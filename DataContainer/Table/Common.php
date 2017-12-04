@@ -14,6 +14,7 @@ namespace ContaoBlackForest\DropZoneBundle\DataContainer\Table;
 
 use Contao\ArticleModel;
 use Contao\BackendUser;
+use Contao\CalendarEventsModel;
 use Contao\ContentModel;
 use Contao\Database;
 use Contao\Environment;
@@ -112,6 +113,8 @@ class Common implements EventSubscriberInterface
         $folderUuid = $this->findPageUploadFolder($event);
         if (!$folderUuid) {
             $folderUuid = $this->findNewsSectionUploadFolder($event);
+        }      if (!$folderUuid) {
+            $folderUuid = $this->findCalendarSectionUploadFolder($event);
         }
 
         if ($folderUuid) {
@@ -228,6 +231,49 @@ class Common implements EventSubscriberInterface
             $newsArchiveModel = $newsModel->getRelated('pid');
 
             return $newsArchiveModel->dropzoneFolder;
+        }
+
+        return null;
+    }
+
+    /**
+     * Find the upload folder for the calendar section.
+     *
+     * @param GetUploadFolderEvent $event The event.
+     *
+     * @return mixed|null
+     */
+    private function findCalendarSectionUploadFolder(GetUploadFolderEvent $event)
+    {
+        if ('calendar' !== Input::get('do')) {
+            return null;
+        }
+
+        if ('tl_calendar_events' === $event->getDataProvider()) {
+            $calendarEventsModel = CalendarEventsModel::findByPk(Input::get('id'));
+            if (!$calendarEventsModel) {
+                return null;
+            }
+
+            $calendarModel = $calendarEventsModel->getRelated('pid');
+
+            return $calendarModel->dropzoneFolder;
+        }
+
+        if ('tl_content' === $event->getDataProvider()) {
+            $contentModel = ContentModel::findByPk(Input::get('id'));
+            if (!$contentModel) {
+                return null;
+            }
+
+            $calendarEventsModel = CalendarEventsModel::findByPk($contentModel->pid);
+            if (!$calendarEventsModel) {
+                return null;
+            }
+
+            $calendarModel = $calendarEventsModel->getRelated('pid');
+
+            return $calendarModel->dropzoneFolder;
         }
 
         return null;
