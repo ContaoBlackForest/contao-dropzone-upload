@@ -15,6 +15,7 @@ namespace ContaoBlackForest\DropZoneBundle\DataContainer\Table;
 use Contao\ArticleModel;
 use Contao\BackendUser;
 use Contao\CalendarEventsModel;
+use Contao\Config;
 use Contao\ContentModel;
 use Contao\Database;
 use Contao\Environment;
@@ -377,6 +378,15 @@ class Common implements EventSubscriberInterface
         }
 
         if ($this->findPropertyInSubPalette($property, $result, $dataProvider, $activePaletteProperties)) {
+            if (!isset($GLOBALS['TL_DCA'][$dataProvider]['fields'][$property]['eval']['extensions'])) {
+                if (isset($GLOBALS['TL_DCA'][$dataProvider]['fields'][$property]['eval']['filesOnly'])
+                    && $GLOBALS['TL_DCA'][$dataProvider]['fields'][$property]['eval']['filesOnly']
+                ) {
+                    $GLOBALS['TL_DCA'][$dataProvider]['fields'][$property]['eval']['extensions'] =
+                        Config::get('uploadTypes');
+                }
+            }
+
             return true;
         }
 
