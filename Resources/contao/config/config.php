@@ -22,3 +22,8 @@ $GLOBALS['TL_HOOKS']['executePreActions'][] = array(
     'ContaoBlackForest\DropZoneBundle\Controller\UploadController',
     'upload'
 );
+
+$GLOBALS['TL_HOOKS']['compileFormFields'][] = array(
+    'ContaoBlackForest\DropZoneBundle\Form\MultipleFileUpload',
+    'registerLoadFormFieldHook'
+);
