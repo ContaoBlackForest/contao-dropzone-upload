@@ -138,8 +138,8 @@ class InjectController
         $dropZone->table             = $widget->strTable;
 
         if ('toggleSubpalette' === Input::post('action')) {
-            $dropZone->javascript = 'assets/dropzone/' . $GLOBALS['TL_ASSETS']['DROPZONE'] . '/css/dropzone.min.css';
-            $dropZone->stylesheet = 'assets/dropzone/' . $GLOBALS['TL_ASSETS']['DROPZONE'] . '/js/dropzone.min.js';
+            $dropZone->stylesheet = 'assets/dropzone/' . $GLOBALS['TL_ASSETS']['DROPZONE'] . '/css/dropzone.min.css';
+            $dropZone->javascript = 'assets/dropzone/' . $GLOBALS['TL_ASSETS']['DROPZONE'] . '/js/dropzone.min.js';
         }
 
         return $buffer . $dropZone->parse();

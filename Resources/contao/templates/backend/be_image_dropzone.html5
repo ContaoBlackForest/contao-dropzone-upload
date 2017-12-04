@@ -1,6 +1,6 @@
 <div class="tl_tbox">
     <h3>Upload</h3>
-    <div id="dropzone-image" class="dz-container">
+    <div id="<?= 'dropzone_' . $this->controlInputField ?>" class="dz-container">
         <div class="dz-default dz-message">
             <span><?= $GLOBALS['TL_LANG']['tl_files']['dropzone'] ?></span>
         </div>
@@ -10,25 +10,8 @@
 </div>
 
 <script>
-    <?php if ($this->stylesheet): ?>
-    var stylesheet = document.createElement("link");
-    stylesheet.setAttribute("rel", "stylesheet");
-    stylesheet.setAttribute("type", "text/css");
-    stylesheet.setAttribute("href", "<?= $this->stylesheet ?>");
-    document.getElementsByTagName("head")[0].appendChild(stylesheet);
-    <?php endif; ?>
-
-    <?php if ($this->javascript): ?>
-    var javascript = document.createElement("script");
-    javascript.setAttribute("src", "<?= $this->stylesheet ?>");
-    document.getElementsByTagName("head")[0].appendChild(javascript);
-    setTimeout(function () {
-        initDropzone();
-    }, 500);
-    <?php endif; ?>
-
     function initDropzone() {
-        new Dropzone('div#dropzone-image', {
+        new Dropzone('div#<?= 'dropzone_' . $this->controlInputField ?>', {
             url: <?= $this->url ?>,
             previewsContainer: '#<?= $this->dropzonePreviews ?>'
         }).on('sending', function (file, xmlHttpRequest, formData) {
@@ -73,10 +56,25 @@
             AjaxRequest.hideBox();
             window.fireEvent('ajax_change');
         });
-
-        <?php if (!$this->javascript): ?>
-        initDropzone();
-        <?php endif; ?>
     }
 
+    <?php if ($this->stylesheet): ?>
+    var stylesheet = document.createElement("link");
+    stylesheet.setAttribute("rel", "stylesheet");
+    stylesheet.setAttribute("href", "<?= $this->stylesheet ?>");
+    document.getElementsByTagName("head")[0].appendChild(stylesheet);
+    <?php endif; ?>
+
+    <?php if ($this->javascript): ?>
+    var javascript = document.createElement("script");
+    javascript.setAttribute("src", "<?= $this->javascript ?>");
+    document.getElementsByTagName("head")[0].appendChild(javascript);
+    setTimeout(function () {
+        initDropzone();
+    }, 500);
+    <?php endif; ?>
+
+     <?php if (!$this->javascript): ?>
+     initDropzone();
+     <?php endif; ?>
 </script>
