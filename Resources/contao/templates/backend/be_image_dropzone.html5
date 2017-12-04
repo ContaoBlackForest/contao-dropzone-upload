@@ -10,49 +10,73 @@
 </div>
 
 <script>
-    new Dropzone('div#dropzone-image', {
-        url: <?= $this->url ?>,
-        previewsContainer: '#<?= $this->dropzonePreviews ?>'
-    }).on('sending', function (file, xmlHttpRequest, formData) {
-        AjaxRequest.displayBox('<?= $GLOBALS['TL_LANG']['MSC']['loadingData'] ?>');
+    <?php if ($this->stylesheet): ?>
+    var stylesheet = document.createElement("link");
+    stylesheet.setAttribute("rel", "stylesheet");
+    stylesheet.setAttribute("type", "text/css");
+    stylesheet.setAttribute("href", "<?= $this->stylesheet ?>");
+    document.getElementsByTagName("head")[0].appendChild(stylesheet);
+    <?php endif; ?>
 
-        formData.append('REQUEST_TOKEN', '<?= \Contao\RequestToken::get() ?>');
-        formData.append('action', 'dropZoneAjax');
-        formData.append('table', '<?= $this->table ?>');
-        formData.append('multiple', <?= $this->multiple ?>);
-        formData.append('extensions', '<?= $this->extensions ?>');
-        formData.append('fieldValue', document.getElementById('<?= 'ctrl_' . $this->controlInputField ?>').value);
-        <?php if($this->multiple): ?>
-        formData.append('orderValue', document.getElementById('<?= 'ctrl_' . $this->orderField ?>').value);
-        <?php endif; ?>
-    }).on('success', function (file, response, progressEvent) {
-        if (response.status === 'confirmed') {
-            var controlField = document.getElementById('<?= 'ctrl_' . $this->controlInputField ?>');
-            var parentElement = controlField.parentElement;
+    <?php if ($this->javascript): ?>
+    var javascript = document.createElement("script");
+    javascript.setAttribute("src", "<?= $this->stylesheet ?>");
+    document.getElementsByTagName("head")[0].appendChild(javascript);
+    setTimeout(function () {
+        initDropzone();
+    }, 500);
+    <?php endif; ?>
 
-            parentElement.innerHTML = response.content;
+    function initDropzone() {
+        new Dropzone('div#dropzone-image', {
+            url: <?= $this->url ?>,
+            previewsContainer: '#<?= $this->dropzonePreviews ?>'
+        }).on('sending', function (file, xmlHttpRequest, formData) {
+            AjaxRequest.displayBox('<?= $GLOBALS['TL_LANG']['MSC']['loadingData'] ?>');
 
-            <?php if($this->multiple): ?>
-            // Isolate scripts and execute them
-            response.content = response.content.stripScripts(function (script) {
-                response.javascript = script.replace(/<!--|\/\/-->|<!\[CDATA\[\/\/>|<!]]>/g, '');
-            });
-            if (response.javascript) {
-                Browser.exec(response.javascript);
-            }
+            formData.append('REQUEST_TOKEN', '<?= \Contao\RequestToken::get() ?>');
+            formData.append('action', 'dropZoneAjax');
+            formData.append('table', '<?= $this->table ?>');
+            formData.append('multiple', <?= $this->multiple ?>);
+            formData.append('extensions', '<?= $this->extensions ?>');
+            formData.append('fieldValue', document.getElementById('<?= 'ctrl_' . $this->controlInputField ?>').value);
+            <?php if ($this->multiple): ?>
+            formData.append('orderValue', document.getElementById('<?= 'ctrl_' . $this->orderField ?>').value);
             <?php endif; ?>
-        }
+        }).on('success', function (file, response, progressEvent) {
+            if (response.status === 'confirmed') {
+                var controlField = document.getElementById('<?= 'ctrl_' . $this->controlInputField ?>');
+                var parentElement = controlField.parentElement;
 
-        var message = document.createElement('div');
-        message.innerHTML = response.message;
-        file.previewTemplate.appendChild(message);
+                parentElement.innerHTML = response.content;
 
-        if (response.status === 'error') {
-            var errorMessage = message.querySelector('.tl_error').innerHTML;
-            this.emit("error", file, errorMessage);
-        }
+                <?php if ($this->multiple): ?>
+                // Isolate scripts and execute them
+                response.content = response.content.stripScripts(function (script) {
+                    response.javascript = script.replace(/<!--|\/\/-->|<!\[CDATA\[\/\/>|<!]]>/g, '');
+                });
+                if (response.javascript) {
+                    Browser.exec(response.javascript);
+                }
+                <?php endif; ?>
+            }
 
-        AjaxRequest.hideBox();
-        window.fireEvent('ajax_change');
-    });
+            var message = document.createElement('div');
+            message.innerHTML = response.message;
+            file.previewTemplate.appendChild(message);
+
+            if (response.status === 'error') {
+                var errorMessage = message.querySelector('.tl_error').innerHTML;
+                this.emit("error", file, errorMessage);
+            }
+
+            AjaxRequest.hideBox();
+            window.fireEvent('ajax_change');
+        });
+
+        <?php if (!$this->javascript): ?>
+        initDropzone();
+        <?php endif; ?>
+    }
+
 </script>

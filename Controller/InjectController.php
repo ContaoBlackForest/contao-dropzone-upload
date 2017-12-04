@@ -16,6 +16,7 @@ use Contao\BackendTemplate;
 use Contao\Controller;
 use Contao\DataContainer;
 use Contao\FileTree;
+use Contao\Input;
 use Contao\Widget;
 use ContaoBlackForest\DropZoneBundle\Event\GetDropZoneDescriptionEvent;
 use ContaoBlackForest\DropZoneBundle\Event\GetDropZoneUrlEvent;
@@ -124,6 +125,11 @@ class InjectController
         $dropZone->orderField        = $widget->orderField;
         $dropZone->extensions        = $widget->extensions;
         $dropZone->table             = $widget->strTable;
+
+        if ('toggleSubpalette' === Input::post('action')) {
+            $dropZone->javascript = 'assets/dropzone/' . $GLOBALS['TL_ASSETS']['DROPZONE'] . '/css/dropzone.min.css';
+            $dropZone->stylesheet = 'assets/dropzone/' . $GLOBALS['TL_ASSETS']['DROPZONE'] . '/js/dropzone.min.js';
+        }
 
         return $buffer . $dropZone->parse();
     }
