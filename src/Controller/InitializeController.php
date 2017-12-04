@@ -29,10 +29,8 @@ class InitializeController
      */
     public function initializePropertyLoadCallback($dataProvider)
     {
-        global $container;
-
         /** @var EventDispatcherInterface $eventDispatcher */
-        $eventDispatcher = $container['event-dispatcher'];
+        $eventDispatcher = $GLOBALS['container']['event-dispatcher'];
 
         $event = new InitializeDropZoneForPropertyEvent($eventDispatcher, $dataProvider);
         $eventDispatcher->dispatch(InitializeDropZoneForPropertyEvent::NAME, $event);

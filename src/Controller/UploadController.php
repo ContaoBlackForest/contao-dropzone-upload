@@ -109,10 +109,8 @@ class UploadController
         $status  = 'error';
 
         if (count($uploads) > 0) {
-            global $container;
-
             /** @var EventDispatcherInterface $eventDispatcher */
-            $eventDispatcher = $container['event-dispatcher'];
+            $eventDispatcher = $GLOBALS['container']['event-dispatcher'];
 
             $file = FilesModel::findByPath($uploads[0]);
 

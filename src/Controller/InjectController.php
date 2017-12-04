@@ -90,10 +90,8 @@ class InjectController
             return $buffer;
         }
 
-        global $container;
-
         /** @var EventDispatcherInterface $eventDispatcher */
-        $eventDispatcher = $container['event-dispatcher'];
+        $eventDispatcher = $GLOBALS['container']['event-dispatcher'];
 
         $uploadFolderEvent = new GetUploadFolderEvent($eventDispatcher, $widget->strTable, $widget->name);
         $eventDispatcher->dispatch(GetUploadFolderEvent::NAME, $uploadFolderEvent);
