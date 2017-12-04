@@ -22,6 +22,7 @@ use Contao\Environment;
 use Contao\FaqModel;
 use Contao\FilesModel;
 use Contao\Input;
+use Contao\NewsletterModel;
 use Contao\NewsModel;
 use Contao\PageModel;
 use ContaoBlackForest\DropZoneBundle\Event\GetDropZoneUrlEvent;
@@ -121,6 +122,9 @@ class Common implements EventSubscriberInterface
         }
         if (!$folderUuid) {
             $folderUuid = $this->findFaqSectionUploadFolder($event);
+        }
+        if (!$folderUuid) {
+            $folderUuid = $this->findNewsletterSectionUploadFolder($event);
         }
 
         if ($folderUuid) {
@@ -307,6 +311,33 @@ class Common implements EventSubscriberInterface
             $faqCategoryModel = $faqModel->getRelated('pid');
 
             return $faqCategoryModel->dropzoneFolder;
+        }
+
+        return null;
+    }
+
+    /**
+     * Find the upload folder for the newsletter section.
+     *
+     * @param GetUploadFolderEvent $event The event.
+     *
+     * @return mixed|null
+     */
+    private function findNewsletterSectionUploadFolder(GetUploadFolderEvent $event)
+    {
+        if ('newsletter' !== Input::get('do')) {
+            return null;
+        }
+
+        if ('tl_newsletter' === $event->getDataProvider()) {
+            $newsletterModel = NewsletterModel::findByPk(Input::get('id'));
+            if (!$newsletterModel) {
+                return null;
+            }
+
+            $newsletterChannelModel = $newsletterModel->getRelated('pid');
+
+            return $newsletterChannelModel->dropzoneFolder;
         }
 
         return null;
