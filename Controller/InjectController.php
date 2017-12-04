@@ -15,6 +15,7 @@ namespace ContaoBlackForest\DropZoneBundle\Controller;
 use Contao\BackendTemplate;
 use Contao\Controller;
 use Contao\DataContainer;
+use Contao\Environment;
 use Contao\FileTree;
 use Contao\Input;
 use Contao\Widget;
@@ -100,6 +101,16 @@ class InjectController
 
         if (!$uploadFolder) {
             return $buffer;
+        }
+
+        // Manipulate the ajax request for get the right html structure from the widget.
+        if (Environment::get('isAjaxRequest')) {
+            $isAjaxRequest = Environment::get('isAjaxRequest');
+            Environment::set('isAjaxRequest', false);
+
+            $buffer = $widget->parse();
+
+            Environment::set('isAjaxRequest', $isAjaxRequest);
         }
 
         $dropZoneUrlEvent = new GetDropZoneUrlEvent($eventDispatcher, $widget->strTable, $widget->name, $uploadFolder);
