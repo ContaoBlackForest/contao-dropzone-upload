@@ -18,6 +18,7 @@ use Contao\CalendarEventsModel;
 use Contao\ContentModel;
 use Contao\Database;
 use Contao\Environment;
+use Contao\FaqModel;
 use Contao\FilesModel;
 use Contao\Input;
 use Contao\NewsModel;
@@ -113,8 +114,12 @@ class Common implements EventSubscriberInterface
         $folderUuid = $this->findPageUploadFolder($event);
         if (!$folderUuid) {
             $folderUuid = $this->findNewsSectionUploadFolder($event);
-        }      if (!$folderUuid) {
+        }
+        if (!$folderUuid) {
             $folderUuid = $this->findCalendarSectionUploadFolder($event);
+        }
+        if (!$folderUuid) {
+            $folderUuid = $this->findFaqSectionUploadFolder($event);
         }
 
         if ($folderUuid) {
@@ -274,6 +279,33 @@ class Common implements EventSubscriberInterface
             $calendarModel = $calendarEventsModel->getRelated('pid');
 
             return $calendarModel->dropzoneFolder;
+        }
+
+        return null;
+    }
+
+    /**
+     * Find the upload folder for the faq section.
+     *
+     * @param GetUploadFolderEvent $event The event.
+     *
+     * @return mixed|null
+     */
+    private function findFaqSectionUploadFolder(GetUploadFolderEvent $event)
+    {
+        if ('faq' !== Input::get('do')) {
+            return null;
+        }
+
+        if ('tl_faq' === $event->getDataProvider()) {
+            $faqModel = FaqModel::findByPk(Input::get('id'));
+            if (!$faqModel) {
+                return null;
+            }
+
+            $faqCategoryModel = $faqModel->getRelated('pid');
+
+            return $faqCategoryModel->dropzoneFolder;
         }
 
         return null;
