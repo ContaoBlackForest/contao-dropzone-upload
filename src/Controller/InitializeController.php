@@ -31,6 +31,9 @@ class InitializeController
     {
         /** @var EventDispatcherInterface $eventDispatcher */
         $eventDispatcher = $GLOBALS['container']['event-dispatcher'];
+        if (!$eventDispatcher) {
+            return;
+        }
 
         $event = new InitializeDropZoneForPropertyEvent($eventDispatcher, $dataProvider);
         $eventDispatcher->dispatch(InitializeDropZoneForPropertyEvent::NAME, $event);
