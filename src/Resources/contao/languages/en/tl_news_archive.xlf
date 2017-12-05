@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.1">
+  <file datatype="php" original="system/modules/dropzone-upload/languages/en/tl_news_archive.xlf" source-language="en">
+    <body>
+      <trans-unit id="tl_news_archive.dropzone_legend">
+        <source>Dropzone settings</source>
+      </trans-unit>
+      <trans-unit id="tl_news_archive.dropzoneFolder.0">
+        <source>Upload folder</source>
+      </trans-unit>
+      <trans-unit id="tl_news_archive.dropzoneFolder.1">
+        <source>Here you can define the upload directory. This directory is used in the messages and their content elements.</source>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

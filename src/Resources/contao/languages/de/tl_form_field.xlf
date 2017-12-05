@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.1">
+  <file datatype="php" original="system/modules/dropzone-upload/languages/en/tl_form_field.xlf" source-language="en" target-language="de">
+    <body>
+      <trans-unit id="tl_form_field.multipleUpload.0">
+        <source>Multiple upload</source>
+        <target>Mehrfach Upload</target>
+      </trans-unit>
+      <trans-unit id="tl_form_field.multipleUpload.1">
+        <source>Here you can enable feature to upload multiple files.</source>
+        <target>Hier können Sie Funktion aktivieren mehrere Dateien hochzuladen.</target>
+      </trans-unit>
+      <trans-unit id="tl_form_field.dropzoneUpload.0">
+        <source>Dropzone upload</source>
+        <target>Dropzone Upload</target>
+      </trans-unit>
+      <trans-unit id="tl_form_field.dropzoneUpload.1">
+        <source>Here you can activate the drop zone to upload the file (s).</source>
+        <target>Hier können Sie die Dropzone aktivieren um die Datei/en hochzuladen.</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
