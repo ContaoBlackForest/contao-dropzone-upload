@@ -16,7 +16,7 @@
 
 $GLOBALS['TL_DCA']['tl_form_field']['palettes']['upload'] = str_replace(
     ';{store_legend',
-    ',multipleUpload;{store_legend',
+    ',multipleUpload,dropzoneUpload;{store_legend',
     $GLOBALS['TL_DCA']['tl_form_field']['palettes']['upload']
 );
 
@@ -36,5 +36,15 @@ $GLOBALS['TL_DCA']['tl_form_field']['fields'] = array_merge(
             ),
             'sql'       => "char(1) NOT NULL default ''"
         ),
+        'dropzoneUpload' => array
+        (
+            'label'     => &$GLOBALS['TL_LANG']['tl_form_field']['dropzoneUpload'],
+            'exclude'   => true,
+            'inputType' => 'checkbox',
+            'eval'      => array(
+                'tl_class' => 'w50 m12'
+            ),
+            'sql'       => "char(1) NOT NULL default ''"
+        )
     )
 );

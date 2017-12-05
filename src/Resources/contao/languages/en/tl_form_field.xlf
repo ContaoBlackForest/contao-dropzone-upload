@@ -8,6 +8,12 @@
       <trans-unit id="tl_form_field.multipleUpload.1">
         <source>Here you can enable feature to upload multiple files.</source>
       </trans-unit>
+      <trans-unit id="tl_form_field.dropzoneUpload.0">
+        <source>Dropzone upload</source>
+      </trans-unit>
+      <trans-unit id="tl_form_field.dropzoneUpload.1">
+        <source>Here you can activate the drop zone to upload the file (s).</source>
+      </trans-unit>
     </body>
   </file>
 </xliff>
