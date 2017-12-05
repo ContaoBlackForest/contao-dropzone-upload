@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.1">
+  <file datatype="php" original="system/modules/dropzone-upload/languages/en/tl_page.xlf" source-language="en" target-language="de">
+    <body>
+      <trans-unit id="tl_page.dropzone_legend">
+        <source>Dropzone settings</source>
+        <target>Dropzone-Einstellungen</target>
+      </trans-unit>
+      <trans-unit id="tl_page.dropzoneFolder.0">
+        <source>Upload folder</source>
+        <target>Upload Verzeichnis</target>
+      </trans-unit>
+      <trans-unit id="tl_page.dropzoneFolder.1">
+        <source>Here you can define the upload directory. This directory can be overwritten in the subpages and is used in the articles and content elements.</source>
+        <target>Hier können Sie das Upload Verzeichnis definieren. Diese Verzeichnis ist in den Unterseiten überschreibar und wird in den Artikel und Content Elmenten benutzt.</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
