@@ -118,7 +118,6 @@ class InjectController
             return $buffer;
         }
 
-
         $dropZoneDescriptionEvent =
             new GetDropZoneDescriptionEvent($eventDispatcher, $widget->strTable, $widget->name, $uploadFolder);
         $eventDispatcher->dispatch(GetDropZoneDescriptionEvent::NAME, $dropZoneDescriptionEvent);

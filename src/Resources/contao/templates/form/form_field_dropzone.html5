@@ -20,7 +20,6 @@
             formData.append('id', '<?= $this->id ?>');
             formData.append('uploadFolder', '<?= $this->uploadFolder ?>');
         }).on('success', function (file, response, progressEvent) {
-
             var message = document.createElement('div');
             message.innerHTML = response.message;
             file.previewTemplate.appendChild(message);

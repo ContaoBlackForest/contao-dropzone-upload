@@ -23,7 +23,6 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 class FileTreeWidget implements EventSubscriberInterface
 {
-
     /**
      * Returns an array of event names this subscriber wants to listen to.
      *

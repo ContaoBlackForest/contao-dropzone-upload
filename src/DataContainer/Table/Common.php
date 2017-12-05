@@ -403,7 +403,6 @@ class Common implements EventSubscriberInterface
 
         $activePaletteProperties = $this->getPaletteProperties($activePalette);
 
-
         if (in_array($property, $activePaletteProperties)) {
             return true;
         }

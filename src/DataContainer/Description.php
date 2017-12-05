@@ -22,7 +22,6 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 class Description implements EventSubscriberInterface
 {
-
     /**
      * Returns an array of event names this subscriber wants to listen to.
      *
@@ -78,7 +77,7 @@ class Description implements EventSubscriberInterface
     }
 
     /**
-     * Return the maximum upload file size in bytes
+     * Return the maximum upload file size in bytes.
      *
      * @return string
      */
