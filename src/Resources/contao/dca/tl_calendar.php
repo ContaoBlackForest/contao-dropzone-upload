@@ -27,8 +27,8 @@ $GLOBALS['TL_DCA']['tl_calendar']['fields'] = array_merge(
             'label'     => &$GLOBALS['TL_LANG']['tl_calendar']['dropzoneFolder'],
             'exclude'   => true,
             'inputType' => 'fileTree',
-            'eval'      => array('fieldType' => 'radiobox', 'tl_class' => 'w50'),
-            'sql'       => "blob NULL"
+            'eval'      => array('fieldType' => 'radio', 'tl_class' => 'w50'),
+            'sql'       => "binary(16) NULL"
         ),
     )
 );
