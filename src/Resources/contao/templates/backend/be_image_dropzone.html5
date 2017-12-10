@@ -1,6 +1,6 @@
 <div class="tl_tbox">
     <h3>Upload</h3>
-    <div id="<?= 'dropzone_' . $this->controlInputField ?>" class="dz-container">
+    <div id="<?= 'dropzone_' . $this->controlInputField ?>" class="dropzone dz-clickable dz-container">
         <div class="dz-default dz-message">
             <span><?= $GLOBALS['TL_LANG']['tl_files']['dropzone'] ?></span>
         </div>
