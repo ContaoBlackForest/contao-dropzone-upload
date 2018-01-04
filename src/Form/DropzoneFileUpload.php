@@ -7,7 +7,7 @@
  * @author    Sven Baumann <baumann.sv@gmail.com>
  * @author    Dominik Tomasi <dominik.tomasi@gmail.com>
  * @license   GNU/LGPL
- * @copyright Copyright 2014-2016 ContaoBlackForest
+ * @copyright Copyright 2014-2018 ContaoBlackForest
  */
 
 namespace ContaoBlackForest\DropZoneBundle\Form;
@@ -39,7 +39,8 @@ class DropzoneFileUpload
      */
     public function initialize($buffer, Widget $widget)
     {
-        if (!($widget instanceof FormFileUpload)
+        if ('FE' !== TL_MODE
+            || !($widget instanceof FormFileUpload)
             || !$widget->dropzoneUpload
         ) {
             return $buffer;
@@ -145,17 +146,9 @@ class DropzoneFileUpload
         $css        = 'assets/dropzone/' . $GLOBALS['TL_ASSETS']['DROPZONE'] . '/css/dropzone.min.css';
         $javascript = 'assets/dropzone/' . $GLOBALS['TL_ASSETS']['DROPZONE'] . '/js/dropzone.min.js';
 
-        if (!in_array('TL_CSS', $GLOBALS, null)
-            || !in_array($css, $GLOBALS['TL_CSS'], null)
-        ) {
-            $GLOBALS['TL_CSS'][md5($css)] = $css;
-        }
+        $GLOBALS['TL_CSS'][md5($css)] = $css;
 
-        if (!in_array('TL_JAVASCRIPT', $GLOBALS, null)
-            || !in_array($javascript, $GLOBALS['TL_JAVASCRIPT'], null)
-        ) {
-            $GLOBALS['TL_JAVASCRIPT'][md5($javascript)] = $javascript;
-        }
+        $GLOBALS['TL_JAVASCRIPT'][md5($javascript)] = $javascript;
 
         Controller::loadLanguageFile('tl_files');
     }
