@@ -15,9 +15,7 @@
  */
 \Contao\TemplateLoader::addFiles(
     array(
-        'be_image_dropzone'   => 'system/modules/dropzone-upload/templates/backend',
+        'be_dropzone'         => 'system/modules/dropzone-upload/templates/backend',
         'form_field_dropzone' => 'system/modules/dropzone-upload/templates/form'
     )
 );
-
-
