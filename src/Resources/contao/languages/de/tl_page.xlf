@@ -14,6 +14,22 @@
         <source>Here you can define the upload directory. This directory can be overwritten in the subpages and is used in the articles and content elements.</source>
         <target>Hier können Sie das Upload Verzeichnis definieren. Diese Verzeichnis ist in den Unterseiten überschreibar und wird in den Artikel und Content Elmenten benutzt.</target>
       </trans-unit>
+      <trans-unit id="tl_page.dropzoneExtendFolderPath.0">
+        <source>Extending the Upload Directory</source>
+        <target>Upload-Verzeichnis erweitern</target>
+      </trans-unit>
+      <trans-unit id="tl_page.dropzoneExtendFolderPath.1">
+        <source>If active, you can extend the upload directory.</source>
+        <target>Wenn aktiv können Sie das Upload-Verzeichnis erweitern.</target>
+      </trans-unit>
+      <trans-unit id="tl_page.dropzoneFolderChunks.0">
+        <source>Upload directory extensions</source>
+        <target>Upload-Verzeichnis Erweiterungen</target>
+      </trans-unit>
+      <trans-unit id="tl_page.dropzoneFolderChunks.1">
+        <source>Here the additional upload directory parts are determined. For example, you can use insert tags to dynamically extend the path.</source>
+        <target>Hier werden die zusätzlichen Upload-Verzeichnis Teile bestimmt. Sie können z.B. mit Hilfe der Inserttags den Pfad dynamisch erweitern.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

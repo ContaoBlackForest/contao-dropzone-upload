@@ -14,6 +14,38 @@
         <source>Here you can define the upload directory. This directory is used in the newsletter.</source>
         <target>Hier können Sie das Upload Verzeichnis definieren. Diese Verzeichnis wird im Newsletter benutzt.</target>
       </trans-unit>
+      <trans-unit id="tl_newsletter_channel.dropzoneTitleInFolder.0">
+        <source>Title in path</source>
+        <target>Titel im Pfad</target>
+      </trans-unit>
+      <trans-unit id="tl_newsletter_channel.dropzoneTitleInFolder.1">
+        <source>If this option is activated, the title of the newsletter channel in the upload path is used as an alias.</source>
+        <target>Wenn diese Option aktiviert ist, wird der Titel des Newsletter Verteilers im Upload-Pfad als Alias benutzt.</target>
+      </trans-unit>
+      <trans-unit id="tl_newsletter_channel.dropzoneAliasInFolder.0">
+        <source>News-Alias in path</source>
+        <target>Nachrichten-Alias im Pfad</target>
+      </trans-unit>
+      <trans-unit id="tl_newsletter_channel.dropzoneAliasInFolder.1">
+        <source>If this option is enabled, the alias of the newsletter in the path is used.</source>
+        <target>Wenn Sie diese Option aktiviert ist, wird der Alias des Newsletters im Pfad benutzt.</target>
+      </trans-unit>
+      <trans-unit id="tl_newsletter_channel.dropzoneExtendFolderPath.0">
+        <source>Extending the Upload Directory</source>
+        <target>Upload-Verzeichnis erweitern</target>
+      </trans-unit>
+      <trans-unit id="tl_newsletter_channel.dropzoneExtendFolderPath.1">
+        <source>If active, you can extend the upload directory.</source>
+        <target>Wenn aktiv können Sie das Upload-Verzeichnis erweitern.</target>
+      </trans-unit>
+      <trans-unit id="tl_newsletter_channel.dropzoneFolderChunks.0">
+        <source>Upload directory extensions</source>
+        <target>Upload-Verzeichnis Erweiterungen</target>
+      </trans-unit>
+      <trans-unit id="tl_newsletter_channel.dropzoneFolderChunks.1">
+        <source>Here the additional upload directory parts are determined. For example, you can use insert tags to dynamically extend the path.</source>
+        <target>Hier werden die zusätzlichen Upload-Verzeichnis Teile bestimmt. Sie können z.B. mit Hilfe der Inserttags den Pfad dynamisch erweitern.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

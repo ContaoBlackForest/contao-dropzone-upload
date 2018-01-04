@@ -11,6 +11,30 @@
       <trans-unit id="tl_calendar.dropzoneFolder.1">
         <source>Here you can define the upload directory. This directory is used in the event and its content elements.</source>
       </trans-unit>
+      <trans-unit id="tl_calendar.dropzoneTitleInFolder.0">
+        <source>Title in path</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar.dropzoneTitleInFolder.1">
+        <source>If this option is activated, the title of the event calendar in the upload path is used as an alias.</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar.dropzoneAliasInFolder.0">
+        <source>Event-Alias in path</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar.dropzoneAliasInFolder.1">
+        <source>If this option is enabled, the alias of the event in the path is used.</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar.dropzoneExtendFolderPath.0">
+        <source>Extending the Upload Directory</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar.dropzoneExtendFolderPath.1">
+        <source>If active, you can extend the upload directory.</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar.dropzoneFolderChunks.0">
+        <source>Upload directory extensions</source>
+      </trans-unit>
+      <trans-unit id="tl_calendar.dropzoneFolderChunks.1">
+        <source>Here the additional upload directory parts are determined. For example, you can use insert tags to dynamically extend the path.</source>
+      </trans-unit>
     </body>
   </file>
 </xliff>
