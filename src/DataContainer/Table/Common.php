@@ -14,18 +14,14 @@ namespace ContaoBlackForest\DropZoneBundle\DataContainer\Table;
 
 use Contao\ArticleModel;
 use Contao\BackendUser;
-use Contao\CalendarEventsModel;
 use Contao\Config;
 use Contao\ContentModel;
 use Contao\Controller;
 use Contao\Database;
 use Contao\Environment;
-use Contao\FaqModel;
 use Contao\FilesModel;
 use Contao\Input;
 use Contao\Model;
-use Contao\NewsletterModel;
-use Contao\NewsModel;
 use Contao\PageModel;
 use Contao\StringUtil;
 use ContaoBlackForest\DropZoneBundle\Event\GetDropZoneUrlEvent;
@@ -118,16 +114,7 @@ class Common implements EventSubscriberInterface
 
         $uploadFolder = $this->findPageUploadFolder($event);
         if (!$uploadFolder) {
-            $uploadFolder = $this->findNewsSectionUploadFolder($event);
-        }
-        if (!$uploadFolder) {
-            $uploadFolder = $this->findCalendarSectionUploadFolder($event);
-        }
-        if (!$uploadFolder) {
-            $uploadFolder = $this->findFaqSectionUploadFolder($event);
-        }
-        if (!$uploadFolder) {
-            $uploadFolder = $this->findNewsletterSectionUploadFolder($event);
+            $uploadFolder = $this->findUploadFolderByModule($event);
         }
 
         if (!$uploadFolder) {
@@ -207,195 +194,61 @@ class Common implements EventSubscriberInterface
     }
 
     /**
-     * Find the upload folder for the news section.
+     * Find the upload folder by core modules.
      *
      * @param GetUploadFolderEvent $event The event.
      *
      * @return string|null
      */
-    private function findNewsSectionUploadFolder(GetUploadFolderEvent $event)
+    private function findUploadFolderByModule(GetUploadFolderEvent $event)
     {
-        if ('news' !== Input::get('do')) {
+        if (!in_array(Input::get('do'), array('news', 'calendar', 'faq', 'newsletter'))) {
             return null;
         }
 
-        $extendedPath = null;
-
-        if ('tl_news' === $event->getDataProvider()) {
-            $newsModel = NewsModel::findByPk(Input::get('id'));
-            if (!$newsModel) {
-                return null;
-            }
-
-            $newsArchiveModel = $newsModel->getRelated('pid');
-
-            if ($newsArchiveModel->dropzoneTitleInFolder) {
-                $extendedPath = StringUtil::generateAlias($newsArchiveModel->title);
-            }
-            if ($newsArchiveModel->dropzoneAliasInFolder) {
-                $extendedPath = $extendedPath ? $extendedPath . '/' . $newsModel->alias : $newsModel->alias;
-            }
-
-            return $this->getUploadDirectoryFromModel($newsArchiveModel, null, $extendedPath);
-        }
-
+        $itemModel = null;
         if ('tl_content' === $event->getDataProvider()) {
-            $contentModel = ContentModel::findByPk(Input::get('id'));
-            if (!$contentModel) {
+            $contentModelClass = Model::getClassFromTable($event->getDataProvider());
+            if (!class_exists($contentModelClass)) {
                 return null;
             }
 
-            $newsModel = NewsModel::findByPk($contentModel->pid);
-            if (!$newsModel) {
+            $contentModel = $contentModelClass::findByPk(Input::get('id'));
+            if (!$contentModel || !$contentModel->pid || !$contentModel->ptable) {
                 return null;
             }
 
-            $newsArchiveModel = $newsModel->getRelated('pid');
-
-            if ($newsArchiveModel->dropzoneTitleInFolder) {
-                $extendedPath = StringUtil::generateAlias($newsArchiveModel->title);
-            }
-            if ($newsArchiveModel->dropzoneAliasInFolder) {
-                $extendedPath = $extendedPath ? $extendedPath . '/' . $newsModel->alias : $newsModel->alias;
+            $itemModelClass = Model::getClassFromTable($contentModel->ptable);
+            if (!class_exists($itemModelClass)) {
+                return null;
             }
 
-            return $this->getUploadDirectoryFromModel($newsArchiveModel, null, $extendedPath);
+            $itemModel = $itemModelClass::findByPk($contentModel->pid);
         }
 
-        return null;
-    }
+        if (!$itemModel) {
+            $itemModelClass = Model::getClassFromTable($event->getDataProvider());
+            if (!class_exists($itemModelClass)) {
+                return null;
+            }
 
-    /**
-     * Find the upload folder for the calendar section.
-     *
-     * @param GetUploadFolderEvent $event The event.
-     *
-     * @return string|null
-     */
-    private function findCalendarSectionUploadFolder(GetUploadFolderEvent $event)
-    {
-        if ('calendar' !== Input::get('do')) {
+            $itemModel = $itemModelClass::findByPk(Input::get('id'));
+        }
+
+        if (!$itemModel || !$itemModel->pid) {
             return null;
         }
 
-        $extendedPath = null;
+        $parentModel = $itemModel->getRelated('pid');
 
-        if ('tl_calendar_events' === $event->getDataProvider()) {
-            $calendarEventsModel = CalendarEventsModel::findByPk(Input::get('id'));
-            if (!$calendarEventsModel) {
-                return null;
-            }
-
-            $calendarModel = $calendarEventsModel->getRelated('pid');
-
-            if ($calendarModel->dropzoneTitleInFolder) {
-                $extendedPath = StringUtil::generateAlias($calendarModel->title);
-            }
-            if ($calendarModel->dropzoneAliasInFolder) {
-                $extendedPath =
-                    $extendedPath ? $extendedPath . '/' . $calendarEventsModel->alias : $calendarEventsModel->alias;
-            }
-
-            return $this->getUploadDirectoryFromModel($calendarModel, null, $extendedPath);
+        if ($parentModel->dropzoneTitleInFolder) {
+            $extendedPath = StringUtil::generateAlias($parentModel->title);
+        }
+        if ($parentModel->dropzoneAliasInFolder && $itemModel->alias) {
+            $extendedPath = $extendedPath ? $extendedPath . '/' . $itemModel->alias : $itemModel->alias;
         }
 
-        if ('tl_content' === $event->getDataProvider()) {
-            $contentModel = ContentModel::findByPk(Input::get('id'));
-            if (!$contentModel) {
-                return null;
-            }
-
-            $calendarEventsModel = CalendarEventsModel::findByPk($contentModel->pid);
-            if (!$calendarEventsModel) {
-                return null;
-            }
-
-            $calendarModel = $calendarEventsModel->getRelated('pid');
-
-            if ($calendarModel->dropzoneTitleInFolder) {
-                $extendedPath = StringUtil::generateAlias($calendarModel->title);
-            }
-            if ($calendarModel->dropzoneAliasInFolder) {
-                $extendedPath =
-                    $extendedPath ? $extendedPath . '/' . $calendarEventsModel->alias : $calendarEventsModel->alias;
-            }
-
-            return $this->getUploadDirectoryFromModel($calendarModel, null, $extendedPath);
-        }
-
-        return null;
-    }
-
-    /**
-     * Find the upload folder for the faq section.
-     *
-     * @param GetUploadFolderEvent $event The event.
-     *
-     * @return string|null
-     */
-    private function findFaqSectionUploadFolder(GetUploadFolderEvent $event)
-    {
-        if ('faq' !== Input::get('do')) {
-            return null;
-        }
-
-        $extendedPath = null;
-
-        if ('tl_faq' === $event->getDataProvider()) {
-            $faqModel = FaqModel::findByPk(Input::get('id'));
-            if (!$faqModel) {
-                return null;
-            }
-
-            $faqCategoryModel = $faqModel->getRelated('pid');
-
-            if ($faqCategoryModel->dropzoneTitleInFolder) {
-                $extendedPath = StringUtil::generateAlias($faqCategoryModel->title);
-            }
-            if ($faqCategoryModel->dropzoneAliasInFolder) {
-                $extendedPath = $extendedPath ? $extendedPath . '/' . $faqModel->alias : $faqModel->alias;
-            }
-
-            return $this->getUploadDirectoryFromModel($faqCategoryModel, null, $extendedPath);
-        }
-
-        return null;
-    }
-
-    /**
-     * Find the upload folder for the newsletter section.
-     *
-     * @param GetUploadFolderEvent $event The event.
-     *
-     * @return string|null
-     */
-    private function findNewsletterSectionUploadFolder(GetUploadFolderEvent $event)
-    {
-        if ('newsletter' !== Input::get('do')) {
-            return null;
-        }
-
-        $extendedPath = null;
-
-        if ('tl_newsletter' === $event->getDataProvider()) {
-            $newsletterModel = NewsletterModel::findByPk(Input::get('id'));
-            if (!$newsletterModel) {
-                return null;
-            }
-
-            $newsletterChannelModel = $newsletterModel->getRelated('pid');
-
-            if ($newsletterChannelModel->dropzoneTitleInFolder) {
-                $extendedPath = StringUtil::generateAlias($newsletterChannelModel->title);
-            }
-            if ($newsletterChannelModel->dropzoneAliasInFolder) {
-                $extendedPath = $extendedPath ? $extendedPath . '/' . $newsletterModel->alias : $newsletterModel->alias;
-            }
-
-            return $this->getUploadDirectoryFromModel($newsletterChannelModel, null, $extendedPath);
-        }
-
-        return null;
+        return $this->getUploadDirectoryFromModel($parentModel, null, $extendedPath);
     }
 
     /**
