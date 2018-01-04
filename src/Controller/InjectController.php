@@ -7,7 +7,7 @@
  * @author    Sven Baumann <baumann.sv@gmail.com>
  * @author    Dominik Tomasi <dominik.tomasi@gmail.com>
  * @license   GNU/LGPL
- * @copyright Copyright 2014-2016 ContaoBlackForest
+ * @copyright Copyright 2014-2018 ContaoBlackForest
  */
 
 namespace ContaoBlackForest\DropZoneBundle\Controller;
@@ -55,17 +55,9 @@ class InjectController
         $css        = 'assets/dropzone/' . $GLOBALS['TL_ASSETS']['DROPZONE'] . '/css/dropzone.min.css';
         $javascript = 'assets/dropzone/' . $GLOBALS['TL_ASSETS']['DROPZONE'] . '/js/dropzone.min.js';
 
-        if (!in_array('TL_CSS', $GLOBALS, null)
-            || !in_array($css, $GLOBALS['TL_CSS'], null)
-        ) {
-            $GLOBALS['TL_CSS'][] = $css;
-        }
+        $GLOBALS['TL_CSS'][md5($css)] = $css;
 
-        if (!in_array('TL_JAVASCRIPT', $GLOBALS, null)
-            || !in_array($javascript, $GLOBALS['TL_JAVASCRIPT'], null)
-        ) {
-            $GLOBALS['TL_JAVASCRIPT'][] = $javascript;
-        }
+        $GLOBALS['TL_JAVASCRIPT'][md5($javascript)] = $javascript;
 
         Controller::loadLanguageFile('tl_files');
     }
