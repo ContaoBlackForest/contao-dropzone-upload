@@ -125,6 +125,7 @@ class InjectController
         $dropZone->orderField        = $widget->orderField;
         $dropZone->extensions        = $widget->extensions;
         $dropZone->table             = $widget->strTable;
+        $dropZone->contao3           = !(class_exists('Contao\CoreBundle\ContaoCoreBundle'));
 
         if ('toggleSubpalette' === Input::post('action')) {
             $dropZone->stylesheet = 'assets/dropzone/' . $GLOBALS['TL_ASSETS']['DROPZONE'] . '/css/dropzone.min.css';
