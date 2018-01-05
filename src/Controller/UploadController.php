@@ -7,7 +7,7 @@
  * @author    Sven Baumann <baumann.sv@gmail.com>
  * @author    Dominik Tomasi <dominik.tomasi@gmail.com>
  * @license   GNU/LGPL
- * @copyright Copyright 2014-2016 ContaoBlackForest
+ * @copyright Copyright 2014-2018 ContaoBlackForest
  */
 
 namespace ContaoBlackForest\DropZoneBundle\Controller;
@@ -21,6 +21,7 @@ use Contao\Folder;
 use Contao\Input;
 use Contao\Message;
 use Contao\RequestToken;
+use ContaoBlackForest\DropZoneBundle\Event\GetFilenameEvent;
 use ContaoBlackForest\DropZoneBundle\Event\GetFileTreeWidgetEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -48,8 +49,7 @@ class UploadController
 
         $this->parseGlobalUploadFiles();
 
-        if (!is_dir(TL_ROOT . '/' . Input::get('dropfolder')))
-        {
+        if (!is_dir(TL_ROOT . '/' . Input::get('dropfolder'))) {
             new Folder(Input::get('dropfolder'));
         }
 
@@ -58,6 +58,15 @@ class UploadController
             $uploadTypes = Config::get('uploadTypes');
             Config::set('uploadTypes', Input::post('extensions'));
         }
+
+        $eventDispatcher = $GLOBALS['container']['event-dispatcher'];
+
+        $fileNameEvent = new GetFilenameEvent(
+            $eventDispatcher, Input::post('table'), $_FILES['files']['name'][0]
+        );
+        $eventDispatcher->dispatch(GetFilenameEvent::NAME, $fileNameEvent);
+
+        $_FILES['files']['name'][0] = $fileNameEvent->getFilename();
 
         $upload  = new FileUpload();
         $uploads = $upload->uploadTo(Input::get('dropfolder'));

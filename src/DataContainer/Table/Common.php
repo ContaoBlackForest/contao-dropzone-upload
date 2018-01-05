@@ -25,6 +25,7 @@ use Contao\Model;
 use Contao\PageModel;
 use Contao\StringUtil;
 use ContaoBlackForest\DropZoneBundle\Event\GetDropZoneUrlEvent;
+use ContaoBlackForest\DropZoneBundle\Event\GetFilenameEvent;
 use ContaoBlackForest\DropZoneBundle\Event\GetUploadFolderEvent;
 use ContaoBlackForest\DropZoneBundle\Event\InitializeDropZoneForPropertyEvent;
 use Database\Result;
@@ -66,6 +67,10 @@ class Common implements EventSubscriberInterface
 
             GetDropZoneUrlEvent::NAME => array(
                 array('getDropZoneUrl')
+            ),
+
+            GetFilenameEvent::NAME => array(
+                array('reviseFileName')
             )
         );
     }
@@ -144,6 +149,124 @@ class Common implements EventSubscriberInterface
             '&dropfield=' . $event->getProperty() .
             '&dropfolder=' . $event->getUploadFolder()
         );
+    }
+
+    /**
+     * Revise the file name.
+     *
+     * @param GetFilenameEvent $event The event.
+     *
+     * @return void
+     */
+    public function reviseFileName(GetFilenameEvent $event)
+    {
+        if (!in_array(Input::get('do'), array('article', 'news', 'calendar', 'faq', 'newsletter'))) {
+            return null;
+        }
+
+        $itemModel = null;
+        if ('tl_content' === $event->getDataProvider()) {
+            $contentModelClass = Model::getClassFromTable($event->getDataProvider());
+            if (!class_exists($contentModelClass)) {
+                return;
+            }
+
+            $contentModel = $contentModelClass::findByPk(Input::get('id'));
+            if (!$contentModel || !$contentModel->pid || !$contentModel->ptable) {
+                return;
+            }
+
+            $itemModelClass = Model::getClassFromTable($contentModel->ptable);
+            if (!class_exists($itemModelClass)) {
+                return;
+            }
+
+            $itemModel = $itemModelClass::findByPk($contentModel->pid);
+        }
+
+        if (!$itemModel) {
+            $itemModelClass = Model::getClassFromTable($event->getDataProvider());
+            if (!class_exists($itemModelClass)) {
+                return;
+            }
+
+            $itemModel = $itemModelClass::findByPk(Input::get('id'));
+        }
+
+        if (!$itemModel || !$itemModel->pid) {
+            return;
+        }
+
+        $parentModel = $itemModel->getRelated('pid');
+        if (!$parentModel->dropzoneNotOverride) {
+            if (5 !== $GLOBALS['TL_DCA'][$parentModel->getTable()]['list']['sorting']['mode']) {
+                return;
+            }
+
+            // Support of inheritance in the tree view.
+            if (!$parentModel->pid) {
+                return;
+            }
+
+            $trailModel = $parentModel::findByPk($parentModel->pid);
+            while ($trailModel->pid) {
+                if ($trailModel->dropzoneNotOverride) {
+                    break;
+                }
+
+                $trailModel = $trailModel::findByPk($trailModel->pid);
+            }
+
+            if (!$trailModel->dropzoneNotOverride) {
+                return;
+            }
+
+            foreach (array('dropzoneNotOverride', 'dropzonePostfix', 'dropzoneCounterLength') as $trailProperty) {
+                $parentModel->{$trailProperty} = $trailModel->{$trailProperty};
+            }
+        }
+
+        $uploadFolder = Input::get('dropfolder');
+        if (!file_exists(
+            TL_ROOT . DIRECTORY_SEPARATOR . $uploadFolder . DIRECTORY_SEPARATOR . $event->getOriginalFilename()
+        )) {
+            return;
+        }
+
+        $filesModel = FilesModel::findMultipleFilesByFolder($uploadFolder);
+        if (!$filesModel) {
+            return;
+        }
+
+        $filename  = substr($event->getOriginalFilename(), 0, strrpos($event->getOriginalFilename(), '.'));
+        $extension = substr($event->getOriginalFilename(), strrpos($event->getOriginalFilename(), '.'));
+
+        $files = array();
+        while ($filesModel->next()) {
+            if (false === stripos($filesModel->name, $filename) && false === stripos($filesModel->name, $extension)) {
+                continue;
+            }
+
+            $files[] = $filesModel->name;
+        }
+        sort($files);
+
+        $counter     = $parentModel->dropzoneCounterLength;
+        $newFilename = $parentModel->dropzonePostfix . $filename . '-' . $counter;
+
+        while (in_array($newFilename . $extension, $files)) {
+            $counter++;
+            //Support leading 0 in the file counter.
+            $counter = str_pad($counter, strlen($parentModel->dropzoneCounterLength), 0, STR_PAD_LEFT);
+
+            $newFilename = $parentModel->dropzonePostfix . $filename . '-' . $counter;
+        }
+
+        if (!in_array($newFilename . $extension, $files)) {
+            $event->setFilename($newFilename . $extension);
+
+            return;
+        }
     }
 
     /**

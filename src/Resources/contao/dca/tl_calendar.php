@@ -15,18 +15,19 @@
  */
 $GLOBALS['TL_DCA']['tl_calendar']['palettes']['__selector__'] = array_merge(
     $GLOBALS['TL_DCA']['tl_calendar']['palettes']['__selector__'],
-    array('dropzoneExtendFolderPath')
+    array('dropzoneNotOverride', 'dropzoneExtendFolderPath')
 );
 
 $GLOBALS['TL_DCA']['tl_calendar']['subpalettes'] = array_merge(
     $GLOBALS['TL_DCA']['tl_calendar']['subpalettes'],
     array(
+        'dropzoneNotOverride'      => 'dropzonePostfix,dropzoneCounterLength',
         'dropzoneExtendFolderPath' => 'dropzoneFolderChunks'
     )
 );
 
 
-$GLOBALS['TL_DCA']['tl_calendar']['palettes']['default'] .= ';{dropzone_legend},dropzoneFolder,dropzoneTitleInFolder,dropzoneAliasInFolder,dropzoneExtendFolderPath';
+$GLOBALS['TL_DCA']['tl_calendar']['palettes']['default'] .= ';{dropzone_legend},dropzoneFolder,dropzoneTitleInFolder,dropzoneAliasInFolder,dropzoneExtendFolderPath,dropzoneNotOverride';
 
 /**
  * Add Fields
@@ -93,6 +94,46 @@ $GLOBALS['TL_DCA']['tl_calendar']['fields'] = array_merge(
                 )
             ),
             'sql'       => "text NULL"
+        ),
+        'dropzoneNotOverride'      => array
+        (
+            'label'     => &$GLOBALS['TL_LANG']['tl_calendar']['dropzoneNotOverride'],
+            'exclude'   => true,
+            'inputType' => 'checkbox',
+            'eval'      => array(
+                'tl_class'       => 'w50 clr',
+                'submitOnChange' => true
+            ),
+            'sql'       => "char(1) NOT NULL default ''"
+        ),
+        'dropzonePostfix'          => array
+        (
+            'label'     => &$GLOBALS['TL_LANG']['tl_calendar']['dropzonePostfix'],
+            'exclude'   => true,
+            'inputType' => 'text',
+            'search'    => true,
+            'eval'      => array(
+                'rgxp'      => 'alias',
+                'doNotCopy' => true,
+                'maxlength' => 24,
+                'tl_class'  => 'w50 clr'
+            ),
+            'sql'       => "varchar(24) NOT NULL default ''"
+        ),
+        'dropzoneCounterLength'    => array
+        (
+            'label'     => &$GLOBALS['TL_LANG']['tl_calendar']['dropzoneCounterLength'],
+            'exclude'   => true,
+            'inputType' => 'text',
+            'search'    => true,
+            'eval'      => array(
+                'rgxp'      => 'natural',
+                'doNotCopy' => true,
+                'maxlength' => 24,
+                'tl_class'  => 'w50',
+                'mandatory' => true
+            ),
+            'sql'       => "varchar(24) NOT NULL default ''"
         )
     )
 );

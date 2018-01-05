@@ -15,12 +15,13 @@
  */
 $GLOBALS['TL_DCA']['tl_page']['palettes']['__selector__'] = array_merge(
     $GLOBALS['TL_DCA']['tl_page']['palettes']['__selector__'],
-    array('dropzoneExtendFolderPath')
+    array('dropzoneExtendFolderPath', 'dropzoneNotOverride')
 );
 
 $GLOBALS['TL_DCA']['tl_page']['subpalettes'] = array_merge(
     $GLOBALS['TL_DCA']['tl_page']['subpalettes'],
     array(
+        'dropzoneNotOverride'      => 'dropzonePostfix,dropzoneCounterLength',
         'dropzoneExtendFolderPath' => 'dropzoneFolderChunks'
     )
 );
@@ -30,7 +31,7 @@ foreach (array_keys($GLOBALS['TL_DCA']['tl_page']['palettes']) as $paletteName) 
         continue;
     }
 
-    $GLOBALS['TL_DCA']['tl_page']['palettes'][$paletteName] .= ';{dropzone_legend},dropzoneFolder,dropzoneExtendFolderPath';
+    $GLOBALS['TL_DCA']['tl_page']['palettes'][$paletteName] .= ';{dropzone_legend},dropzoneFolder,dropzoneExtendFolderPath,dropzoneNotOverride';
 }
 
 /**

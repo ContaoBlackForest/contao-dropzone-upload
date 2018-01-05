@@ -15,18 +15,19 @@
  */
 $GLOBALS['TL_DCA']['tl_faq_category']['palettes']['__selector__'] = array_merge(
     $GLOBALS['TL_DCA']['tl_faq_category']['palettes']['__selector__'],
-    array('dropzoneExtendFolderPath')
+    array('dropzoneNotOverride', 'dropzoneExtendFolderPath')
 );
 
 $GLOBALS['TL_DCA']['tl_faq_category']['subpalettes'] = array_merge(
     $GLOBALS['TL_DCA']['tl_faq_category']['subpalettes'],
     array(
+        'dropzoneNotOverride'      => 'dropzonePostfix,dropzoneCounterLength',
         'dropzoneExtendFolderPath' => 'dropzoneFolderChunks'
     )
 );
 
 
-$GLOBALS['TL_DCA']['tl_faq_category']['palettes']['default'] .= ';{dropzone_legend},dropzoneFolder,dropzoneTitleInFolder,dropzoneAliasInFolder,dropzoneExtendFolderPath';
+$GLOBALS['TL_DCA']['tl_faq_category']['palettes']['default'] .= ';{dropzone_legend},dropzoneFolder,dropzoneTitleInFolder,dropzoneAliasInFolder,dropzoneExtendFolderPath,dropzoneNotOverride';
 
 /**
  * Add Fields
@@ -93,6 +94,46 @@ $GLOBALS['TL_DCA']['tl_faq_category']['fields'] = array_merge(
                 )
             ),
             'sql'       => "text NULL"
+        ),
+        'dropzoneNotOverride'      => array
+        (
+            'label'     => &$GLOBALS['TL_LANG']['tl_faq_category']['dropzoneNotOverride'],
+            'exclude'   => true,
+            'inputType' => 'checkbox',
+            'eval'      => array(
+                'tl_class'       => 'w50 clr',
+                'submitOnChange' => true
+            ),
+            'sql'       => "char(1) NOT NULL default ''"
+        ),
+        'dropzonePostfix'          => array
+        (
+            'label'     => &$GLOBALS['TL_LANG']['tl_faq_category']['dropzonePostfix'],
+            'exclude'   => true,
+            'inputType' => 'text',
+            'search'    => true,
+            'eval'      => array(
+                'rgxp'      => 'alias',
+                'doNotCopy' => true,
+                'maxlength' => 24,
+                'tl_class'  => 'w50 clr'
+            ),
+            'sql'       => "varchar(24) NOT NULL default ''"
+        ),
+        'dropzoneCounterLength'    => array
+        (
+            'label'     => &$GLOBALS['TL_LANG']['tl_faq_category']['dropzoneCounterLength'],
+            'exclude'   => true,
+            'inputType' => 'text',
+            'search'    => true,
+            'eval'      => array(
+                'rgxp'      => 'natural',
+                'doNotCopy' => true,
+                'maxlength' => 24,
+                'tl_class'  => 'w50',
+                'mandatory' => true
+            ),
+            'sql'       => "varchar(24) NOT NULL default ''"
         )
     )
 );
