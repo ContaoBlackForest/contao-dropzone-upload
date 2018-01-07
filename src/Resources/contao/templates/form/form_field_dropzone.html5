@@ -12,9 +12,10 @@
     function initDropzone() {
         new Dropzone('div#<?= 'dropzone_' . $this->controlInputField ?>', {
             url: <?= $this->url ?>,
-            previewsContainer: '#<?= $this->dropzonePreviews ?>'
+            previewsContainer: '#<?= $this->dropzonePreviews ?>',
+            maxFiles: <?= $this->maxFiles ?>,
+            dictMaxFilesExceeded: '<?= $this->dictMaxFilesExceeded ?>'
         }).on('sending', function (file, xmlHttpRequest, formData) {
-            console.log('send', file);
             formData.append('REQUEST_TOKEN', '<?= \Contao\RequestToken::get() ?>');
             formData.append('action', 'dropZoneAjax');
             formData.append('id', '<?= $this->id ?>');

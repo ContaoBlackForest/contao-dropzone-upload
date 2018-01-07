@@ -7,7 +7,7 @@
  * @author    Sven Baumann <baumann.sv@gmail.com>
  * @author    Dominik Tomasi <dominik.tomasi@gmail.com>
  * @license   GNU/LGPL
- * @copyright Copyright 2014-2016 ContaoBlackForest
+ * @copyright Copyright 2014-2018 ContaoBlackForest
  */
 
 namespace ContaoBlackForest\DropZoneBundle\Form;
@@ -30,7 +30,7 @@ class MultipleFileUpload
     /**
      * Register the load form field hook.
      *
-     * @param array  $fields The form fields.
+     * @param array $fields The form fields.
      *
      * @return array
      */
@@ -69,12 +69,40 @@ class MultipleFileUpload
         if (!isset($_FILES[$widget->name])) {
             $widget->name .= '[]';
             $widget->addAttribute('multiple', 'multiple');
+            $widget->addAttribute('maxLength', $widget->multipleUploadLimit);
+            $widget->addAttribute(
+                'onchange',
+                sprintf(
+                    '%s(this, "%s");',
+                    'CB.form.validator.file.multiple',
+                    sprintf($GLOBALS['TL_LANG']['ERR']['maxFileUpload'], $widget->multipleUploadLimit)
+                )
+            );
         } else {
+
+            if ($widget->multipleUploadLimit && count($_FILES[$widget->name]['name']) > $widget->multipleUploadLimit) {
+                unset($_FILES[$widget->name]);
+
+                $widget->name .= '[]';
+                $widget->addAttribute('multiple', 'multiple');
+                $widget->addAttribute('maxLength', $widget->multipleUploadLimit);
+                $widget->addAttribute(
+                    'onchange',
+                    sprintf(
+                        '%s(this, "%s");',
+                        'CB.form.validator.file.multiple',
+                        sprintf($GLOBALS['TL_LANG']['ERR']['maxFileUpload'], $widget->multipleUploadLimit)
+                    )
+                );
+
+                $widget->addError(sprintf($GLOBALS['TL_LANG']['ERR']['maxFileUpload'], $widget->multipleUploadLimit));
+            }
+
             // Redefine the the uploads for the validator.
             $this->uploadFiles = $_FILES;
         }
 
-        while (count($this->uploadFiles[$widget->name]['name'])) {
+        while (count($this->uploadFiles[$widget->name]['name']) && !$widget->hasErrors()) {
             foreach (array('name', 'type', 'tmp_name', 'error', 'size') as $key) {
                 $_FILES[$widget->name][$key] = array_splice($this->uploadFiles[$widget->name][$key], -1)[0];
             }
@@ -85,6 +113,8 @@ class MultipleFileUpload
                 break;
             }
         }
+
+        $GLOBALS['TL_JAVASCRIPT'][] = 'assets/dropzone-upload/js/multipleUpload.min.js|static';
 
         return $widget;
     }

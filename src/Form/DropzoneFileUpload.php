@@ -81,13 +81,16 @@ class DropzoneFileUpload
 
         $page = $GLOBALS['objPage'];
 
-        $dropZone                    = new FrontendTemplate('form_field_dropzone');
-        $dropZone->url               = '\'' . $page->getFrontendUrl() . '\'';
-        $dropZone->uploadDescription = $dropZoneDescriptionEvent->getDescription();
-        $dropZone->controlInputField = $widget->id;
-        $dropZone->dropzonePreviews  = 'dropzone_previews_' . $widget->id;
-        $dropZone->uploadFolder      = $uploadFolder;
-        $dropZone->id                = $widget->id;
+        $dropZone                       = new FrontendTemplate('form_field_dropzone');
+        $dropZone->url                  = '\'' . $page->getFrontendUrl() . '\'';
+        $dropZone->uploadDescription    = $dropZoneDescriptionEvent->getDescription();
+        $dropZone->controlInputField    = $widget->id;
+        $dropZone->dropzonePreviews     = 'dropzone_previews_' . $widget->id;
+        $dropZone->uploadFolder         = $uploadFolder;
+        $dropZone->id                   = $widget->id;
+        $dropZone->maxFiles             = (!$widget->multipleUpload) ? 1 : ($widget->multipleUploadLimit) ?: 'null';
+        $dropZone->dictMaxFilesExceeded =
+            sprintf($GLOBALS['TL_LANG']['ERR']['maxFileUpload'], $widget->multipleUploadLimit);
 
         return $buffer . $dropZone->parse();
     }

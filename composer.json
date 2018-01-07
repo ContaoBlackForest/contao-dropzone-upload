@@ -51,7 +51,8 @@
   "extra": {
     "contao": {
       "sources": {
-        "src/Resources/contao": "system/modules/dropzone-upload"
+        "src/Resources/contao": "system/modules/dropzone-upload",
+        "src/Resources/public": "assets/dropzone-upload"
       }
     },
     "branch-alias": {
