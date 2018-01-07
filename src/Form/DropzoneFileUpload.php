@@ -14,10 +14,15 @@ namespace ContaoBlackForest\DropZoneBundle\Form;
 
 use Contao\Config;
 use Contao\Controller;
+use Contao\Files;
 use Contao\FilesModel;
+use Contao\FileUpload;
+use Contao\Folder;
+use Contao\Form;
 use Contao\FormFileUpload;
 use Contao\FrontendTemplate;
 use Contao\Input;
+use Contao\Message;
 use Contao\Widget;
 use ContaoBlackForest\DropZoneBundle\Event\GetDropZoneDescriptionEvent;
 use ContaoBlackForest\DropZoneBundle\Event\GetUploadFolderEvent;
@@ -96,6 +101,93 @@ class DropzoneFileUpload
     }
 
     /**
+     * Prepare the form data for move the uploaded temporary files.
+     *
+     * @param array $submitted  The submitted data.
+     *
+     * @param array $labels     The labels.
+     *
+     * @param Form  $form       The form.
+     *
+     * @param array $formFields The form fields.
+     *
+     * @return void
+     */
+    public function prepareFormData($submitted, $labels, Form $form, array $formFields)
+    {
+        $tmpFolder = 'system' . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR . 'dropzone';
+        $tmpFolder .= DIRECTORY_SEPARATOR . Input::post('REQUEST_TOKEN');
+        $tmpFolder .= DIRECTORY_SEPARATOR . $form->id;
+
+        if (!is_dir(TL_ROOT . DIRECTORY_SEPARATOR . $tmpFolder)) {
+            return;
+        }
+
+        $field = null;
+        foreach ($formFields as $formField) {
+            if (!is_dir(TL_ROOT . DIRECTORY_SEPARATOR . $tmpFolder . DIRECTORY_SEPARATOR . $formField->id)) {
+                continue;
+            }
+
+            $field = $formField;
+            break;
+        }
+        if (!$field
+            || !$field->dropzoneUpload
+        ) {
+            return;
+        }
+
+        $tmpFolder .= DIRECTORY_SEPARATOR . $field->id;
+
+        $files = $this->scanFolder($tmpFolder);
+        if (count($files) < 1) {
+            return;
+        }
+
+        $filesSystem = Files::getInstance();
+        foreach ($files as $file) {
+            $source      = $file;
+            $destination = str_replace($tmpFolder . DIRECTORY_SEPARATOR, '', $file);
+
+            // Do not overwrite existing files
+            if ($field->doNotOverwrite && file_exists(TL_ROOT . DIRECTORY_SEPARATOR . $destination)) {
+                $path      = substr($destination, 0, strrpos($destination, DIRECTORY_SEPARATOR));
+                $file      = substr($destination, strrpos($destination, DIRECTORY_SEPARATOR) + 1);
+                $filename  = substr($file, 0, strrpos($file, '.'));
+                $extension = substr($file, strrpos($file, '.') + 1);
+
+                $destinationFiles =
+                    preg_grep(
+                        '/^' . preg_quote($filename, '/') . '.*\.' . preg_quote($extension, '/') . '/',
+                        scan(TL_ROOT . DIRECTORY_SEPARATOR . $path)
+                    );
+
+                $offset = 1;
+                foreach ($destinationFiles as $destinationFile) {
+                    if (preg_match('/__[0-9]+\.' . preg_quote($extension, '/') . '$/', $destinationFile)) {
+                        $destinationFile = str_replace('.' . $extension, '', $destinationFile);
+                        $intValue        = (int) substr($destinationFile, (strrpos($destinationFile, '_') + 1));
+
+                        $offset = max($offset, $intValue);
+                    }
+                }
+
+                $destination = $path . DIRECTORY_SEPARATOR . $filename . '__' . ++$offset . '.' . $extension;
+            }
+
+            if ($filesSystem->rename($source, $destination)) {
+                $filesSystem->chmod($destination, Config::get('defaultFileChmod'));
+
+                // Notify the user
+                Controller::log('File "' . $destination . '" has been uploaded', __METHOD__, TL_FILES);
+            }
+
+            $this->removeEmptyDirectories(dirname($source));
+        }
+    }
+
+    /**
      * Get the response.
      *
      * @param Widget $widget The widget.
@@ -109,10 +201,31 @@ class DropzoneFileUpload
 
         $this->parseGlobalUploadFiles($widget->name);
 
-        $widget->validate();
+        $uploadTypes = Config::get('uploadTypes');
+        Config::set('uploadTypes', $widget->extensions);
 
-        $status  = $widget->hasErrors() ? 'error' : 'confirmed';
-        $message = $widget->hasErrors() ? implode(' ', $widget->getErrors()) : '';
+        $tmpFolder = 'system' . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR . 'dropzone';
+        $tmpFolder .= DIRECTORY_SEPARATOR . Input::post('REQUEST_TOKEN');
+        $tmpFolder .= DIRECTORY_SEPARATOR . $widget->pid;
+        $tmpFolder .= DIRECTORY_SEPARATOR . $widget->id;
+        $tmpFolder .= DIRECTORY_SEPARATOR . Input::post('uploadFolder');
+
+        new Folder($tmpFolder);
+
+        $upload = new FileUpload();
+        $upload->setName($widget->name);
+        $uploads = $upload->uploadTo($tmpFolder);
+
+        Config::set('uploadTypes', $uploadTypes);
+
+        $status = 'error';
+
+        if (count($uploads) > 0) {
+            $status = 'confirmed';
+        }
+
+        $message = Message::generate();
+        Message::reset();
 
         return array('message' => $message, 'status' => $status);
     }
@@ -128,7 +241,7 @@ class DropzoneFileUpload
 
         foreach ($_FILES['file'] as $param => $value) {
             if (!is_array($param)) {
-                $files[$param] = $value;
+                $files[$param][] = $value;
 
                 continue;
             }
@@ -154,5 +267,65 @@ class DropzoneFileUpload
         $GLOBALS['TL_JAVASCRIPT'][md5($javascript)] = $javascript;
 
         Controller::loadLanguageFile('tl_files');
+    }
+
+    /**
+     * Scan files in the folder. Hidden files where excluded.
+     *
+     * @param string $folder The folder.
+     *
+     * @return array|null
+     */
+    private function scanFolder($folder)
+    {
+        if (!file_exists(TL_ROOT . DIRECTORY_SEPARATOR . $folder)) {
+            return null;
+        }
+
+        $files = array();
+        foreach (scan(TL_ROOT . DIRECTORY_SEPARATOR . $folder, true) as $file) {
+            if (is_dir(TL_ROOT . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR . $file)) {
+                $files = array_merge($files, $this->scanFolder($folder . DIRECTORY_SEPARATOR . $file));
+
+                continue;
+            }
+
+            // Excluded hidden file.
+            if (strncmp($file, '.', 1) === 0) {
+                continue;
+            }
+
+            $files[] = $folder . DIRECTORY_SEPARATOR . $file;
+        }
+
+        return $files;
+    }
+
+    /**
+     * Remove all empty trailing path.
+     *
+     * @param string $folder The folder.
+     *
+     * @return void
+     */
+    private function removeEmptyDirectories($folder)
+    {
+        if (!Input::post('REQUEST_TOKEN')
+            || count($this->scanFolder($folder))
+        ) {
+            return;
+        }
+
+        Files::getInstance()->rrdir($folder);
+
+        $chunks           = explode(DIRECTORY_SEPARATOR, $folder);
+        $currentDirectory = array_pop($chunks);
+
+        // Stop remove directory by the temporary dropzone Folder.
+        if ($currentDirectory === Input::post('REQUEST_TOKEN')) {
+            return;
+        }
+
+        $this->removeEmptyDirectories(implode(DIRECTORY_SEPARATOR, $chunks));
     }
 }
