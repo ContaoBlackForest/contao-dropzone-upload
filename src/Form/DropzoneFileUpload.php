@@ -101,6 +101,31 @@ class DropzoneFileUpload
     }
 
     /**
+     * Prepare the form data bridge.
+     *
+     * @param array      $submitted The submitted data.
+     *
+     * @param array      $labels    The labels.
+     *
+     * @param Form|array $argument1 The form|The form fields.
+     *
+     * @param array|Form $argument2 The form fields|The form.
+     *
+     * @return void
+     */
+    public function prepareFormData(array $submitted, array $labels, $argument1, $argument2)
+    {
+        // Contao 3.5
+        if (!class_exists('Contao\CoreBundle\ContaoCoreBundle')) {
+            $this->prepareFormDataExecute($submitted, $labels, $argument1, $argument2);
+
+            return;
+        }
+
+        $this->prepareFormDataExecute($submitted, $labels, $argument2, $argument1);
+    }
+
+    /**
      * Prepare the form data for move the uploaded temporary files.
      *
      * @param array $submitted  The submitted data.
@@ -113,7 +138,7 @@ class DropzoneFileUpload
      *
      * @return void
      */
-    public function prepareFormData($submitted, $labels, Form $form, array $formFields)
+    private function prepareFormDataExecute(array $submitted, array $labels, Form $form, array $formFields)
     {
         $tmpFolder = 'system' . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR . 'dropzone';
         $tmpFolder .= DIRECTORY_SEPARATOR . Input::post('REQUEST_TOKEN');
