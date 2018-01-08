@@ -12,9 +12,11 @@
 
 namespace ContaoBlackForest\DropZoneBundle\DataContainer\Table;
 
+use Contao\Controller;
 use Contao\Database;
 use Contao\FileTree;
 use Contao\Input;
+use Contao\System;
 use ContaoBlackForest\DropZoneBundle\Event\GetFileTreeWidgetEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -61,6 +63,9 @@ class FileTreeWidget implements EventSubscriberInterface
     {
         $dataProvider = $event->getDataProvider();
 
+        if (!$GLOBALS['loadDataContainer'][$dataProvider]) {
+            Controller::loadDataContainer($dataProvider);
+        }
         if (false === isset($GLOBALS['TL_DCA'][$dataProvider]['config']['dataContainer'])) {
             return;
         }

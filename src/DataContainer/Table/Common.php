@@ -199,6 +199,9 @@ class Common implements EventSubscriberInterface
 
         $parentModel = $itemModel->getRelated('pid');
         if (!$parentModel->dropzoneNotOverride) {
+            if (!$GLOBALS['loadDataContainer'][$parentModel->getTable()]) {
+                Controller::loadDataContainer($parentModel->getTable());
+            }
             if (5 !== $GLOBALS['TL_DCA'][$parentModel->getTable()]['list']['sorting']['mode']) {
                 return;
             }
