@@ -91,7 +91,18 @@ class FileTreeWidget implements EventSubscriberInterface
                     $reflectionClass = new \ReflectionClass($callback[0]);
 
                     $instance = null;
-                    if ($reflectionClass->hasMethod('getInstance')) {
+                    if (class_exists('Contao\CoreBundle\ContaoCoreBundle')) {
+                        $container = System::getContainer();
+
+                        if ($container->has($reflectionClass->getName())
+                            && (strpos($reflectionClass->getName(), '\\') !== false
+                                || !class_exists($reflectionClass->getName())
+                            )
+                        ) {
+                            $instance = $container->get($reflectionClass->getName());
+                        }
+                    }
+                    if (!$instance && $reflectionClass->hasMethod('getInstance')) {
                         $instance = $reflectionClass->newInstance();
                     }
                     if (!$instance) {
