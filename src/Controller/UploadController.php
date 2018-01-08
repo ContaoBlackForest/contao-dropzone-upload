@@ -71,6 +71,8 @@ class UploadController
         $upload  = new FileUpload();
         $uploads = $upload->uploadTo(Input::get('dropfolder'));
 
+        unset($_FILES['files']);
+
         // Reset the defined upload types.
         if (Input::post('extensions')) {
             Config::set('uploadTypes', $uploadTypes);
@@ -101,6 +103,7 @@ class UploadController
 
             $files[$param] = $value;
         }
+        unset($_FILES['file']);
 
         $_FILES['files'] = $files;
     }
