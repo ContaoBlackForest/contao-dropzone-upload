@@ -89,7 +89,15 @@ class FileTreeWidget implements EventSubscriberInterface
             foreach ($GLOBALS['TL_DCA'][$dataProvider]['fields'][$property]['load_callback'] as $callback) {
                 if (is_array($callback)) {
                     $reflectionClass = new \ReflectionClass($callback[0]);
-                    $instance        = $reflectionClass->newInstance();
+
+                    $instance = null;
+                    if ($reflectionClass->hasMethod('getInstance')) {
+                        $instance = $reflectionClass->newInstance();
+                    }
+                    if (!$instance) {
+                        $instance = $reflectionClass->newInstanceWithoutConstructor();
+                    }
+
 
                     $instance->{$callback[1]}($result->{$property}, $dc);
                 } elseif (is_callable($callback)) {
