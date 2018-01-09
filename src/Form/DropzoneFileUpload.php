@@ -14,6 +14,7 @@ namespace ContaoBlackForest\DropZoneBundle\Form;
 
 use Contao\Config;
 use Contao\Controller;
+use Contao\Environment;
 use Contao\Files;
 use Contao\FilesModel;
 use Contao\FileUpload;
@@ -84,10 +85,8 @@ class DropzoneFileUpload
 
         $this->includeDropZoneAssets();
 
-        $page = $GLOBALS['objPage'];
-
         $dropZone                       = new FrontendTemplate('form_field_dropzone');
-        $dropZone->url                  = '\'' . $page->getFrontendUrl() . '\'';
+        $dropZone->url                  = '\'' . Environment::get('requestUri') . '\'';
         $dropZone->uploadDescription    = $dropZoneDescriptionEvent->getDescription();
         $dropZone->controlInputField    = $widget->id;
         $dropZone->dropzonePreviews     = 'dropzone_previews_' . $widget->id;
