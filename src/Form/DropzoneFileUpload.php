@@ -96,7 +96,7 @@ class DropzoneFileUpload
         $dropZone->dictMaxFilesExceeded =
             sprintf($GLOBALS['TL_LANG']['ERR']['maxFileUpload'], $widget->multipleUploadLimit);
 
-        return $buffer . $dropZone->parse();
+        return substr($buffer, 0, strrpos($buffer, '</div>')) . $dropZone->parse() . '</div>';
     }
 
     /**
