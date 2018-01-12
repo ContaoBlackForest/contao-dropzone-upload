@@ -173,10 +173,10 @@ class DropzoneFileUpload
         foreach ($files as $file) {
             $source      = $file;
             $destination = str_replace($tmpFolder . DIRECTORY_SEPARATOR, '', $file);
+            $path = substr($destination, 0, strrpos($destination, DIRECTORY_SEPARATOR));
 
             // Do not overwrite existing files
             if ($field->doNotOverwrite && file_exists(TL_ROOT . DIRECTORY_SEPARATOR . $destination)) {
-                $path      = substr($destination, 0, strrpos($destination, DIRECTORY_SEPARATOR));
                 $file      = substr($destination, strrpos($destination, DIRECTORY_SEPARATOR) + 1);
                 $filename  = substr($file, 0, strrpos($file, '.'));
                 $extension = substr($file, strrpos($file, '.') + 1);
@@ -199,6 +199,8 @@ class DropzoneFileUpload
 
                 $destination = $path . DIRECTORY_SEPARATOR . $filename . '__' . ++$offset . '.' . $extension;
             }
+
+            new Folder($path);
 
             if ($filesSystem->rename($source, $destination)) {
                 $filesSystem->chmod($destination, Config::get('defaultFileChmod'));
