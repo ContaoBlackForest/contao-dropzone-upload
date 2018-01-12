@@ -5,7 +5,9 @@
         </div>
         <div class="dropzone-previews" id="<?= $this->dropzonePreviews ?>"></div>
     </div>
+    <?php if ($this->uploadDescription): ?>
     <p class="tl_help tl_tip" title=""><?= $this->uploadDescription ?></p>
+    <?php endif; ?>
 </div>
 
 <script>
