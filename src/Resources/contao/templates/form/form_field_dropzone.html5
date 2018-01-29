@@ -16,7 +16,8 @@
             url: <?= $this->url ?>,
             previewsContainer: '#<?= $this->dropzonePreviews ?>',
             maxFiles: <?= $this->maxFiles ?>,
-            dictMaxFilesExceeded: '<?= $this->dictMaxFilesExceeded ?>'
+            dictMaxFilesExceeded: '<?= $this->dictMaxFilesExceeded ?>',
+            acceptedFiles: '<?= $this->acceptedFiles ?>'
         }).on('sending', function (file, xmlHttpRequest, formData) {
             formData.append('REQUEST_TOKEN', '<?= \Contao\RequestToken::get() ?>');
             formData.append('action', 'dropZoneAjax');

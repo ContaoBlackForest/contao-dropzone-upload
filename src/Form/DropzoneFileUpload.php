@@ -95,6 +95,7 @@ class DropzoneFileUpload
         $dropZone->maxFiles             = (!$widget->multipleUpload) ? 1 : ($widget->multipleUploadLimit) ?: 'null';
         $dropZone->dictMaxFilesExceeded =
             sprintf($GLOBALS['TL_LANG']['ERR']['maxFileUpload'], $widget->multipleUploadLimit);
+        $dropZone->acceptedFiles        = $this->getAllowedUploadTypes($widget);
 
         return substr($buffer, 0, strrpos($buffer, '</div>')) . $dropZone->parse() . '</div>';
     }
@@ -173,7 +174,7 @@ class DropzoneFileUpload
         foreach ($files as $file) {
             $source      = $file;
             $destination = str_replace($tmpFolder . DIRECTORY_SEPARATOR, '', $file);
-            $path = substr($destination, 0, strrpos($destination, DIRECTORY_SEPARATOR));
+            $path        = substr($destination, 0, strrpos($destination, DIRECTORY_SEPARATOR));
 
             // Do not overwrite existing files
             if ($field->doNotOverwrite && file_exists(TL_ROOT . DIRECTORY_SEPARATOR . $destination)) {
@@ -353,5 +354,24 @@ class DropzoneFileUpload
         }
 
         $this->removeEmptyDirectories(implode(DIRECTORY_SEPARATOR, $chunks));
+    }
+
+    /**
+     * Get the allowed upload types.
+     *
+     * @param Widget $widget The widget.
+     *
+     * @return string
+     */
+    private function getAllowedUploadTypes(Widget $widget)
+    {
+        $allowedExtensions = $widget->extensions ?: Config::get('uploadTypes');
+
+        $extensions = array();
+        foreach (explode(',', $allowedExtensions) as $allowedExtension) {
+            $extensions[] = '.' . $allowedExtension;
+        }
+
+        return implode(',', $extensions);
     }
 }
