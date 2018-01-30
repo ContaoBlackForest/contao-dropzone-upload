@@ -25,7 +25,7 @@ class GetFilenameEvent extends Event
      *
      * @var string
      */
-    const NAME = 'ContaoBlackForest\DropZoneBundle\Event\GetFilenameEvent';
+    const NAME = 'cb.dropzone_upload.get_filename';
 
     /**
      * The event dispatcher.

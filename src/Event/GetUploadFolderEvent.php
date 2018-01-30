@@ -23,7 +23,7 @@ class GetUploadFolderEvent extends Event
     /**
      * @var string The event name.
      */
-    const NAME = 'ContaoBlackForest\DropZoneBundle\Event\GetUploadFolderEvent';
+    const NAME = 'cb.dropzone_upload.get_upload_folder';
 
     /**
      * @var EventDispatcherInterface The event dispatcher.

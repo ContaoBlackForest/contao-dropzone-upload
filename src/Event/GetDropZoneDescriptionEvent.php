@@ -23,7 +23,7 @@ class GetDropZoneDescriptionEvent extends Event
     /**
      * @var string The event name.
      */
-    const NAME = 'ContaoBlackForest\DropZoneBundle\Event\GetDropZoneDescriptionEvent';
+    const NAME = 'cb.dropzone_upload.get_description';
 
     /**
      * @var EventDispatcherInterface The event dispatcher.
