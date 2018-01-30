@@ -23,7 +23,7 @@ class GetDropZoneUrlEvent extends Event
     /**
      * @var string The event name.
      */
-    const NAME = 'ContaoBlackForest\DropZoneBundle\Event\GetDropZoneUrlEvent';
+    const NAME = 'cb.dropzone_upload.get_url';
 
     /**
      * @var EventDispatcherInterface The event dispatcher.

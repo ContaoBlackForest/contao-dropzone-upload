@@ -23,7 +23,7 @@ class InitializeDropZoneForPropertyEvent extends Event
     /**
      * @var string The event name.
      */
-    const NAME = 'ContaoBlackForest\DropZoneBundle\Event\InitializeDropZoneForPropertyEvent';
+    const NAME = 'cb.dropzone_upload.initialize_for_property';
 
     /**
      * @var EventDispatcherInterface The event dispatcher.
