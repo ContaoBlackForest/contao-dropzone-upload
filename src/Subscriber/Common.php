@@ -60,6 +60,8 @@ class Common implements EventSubscriberInterface
             return;
         }
 
-        $event->setUploadFolder('files/dropzone_upload');
+        $uploadFolder = $GLOBALS['DROPZONE']['BASE_FOLDER'] ?: 'files/dropzone_upload';
+
+        $event->setUploadFolder($uploadFolder);
     }
 }

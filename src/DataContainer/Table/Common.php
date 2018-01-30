@@ -7,25 +7,25 @@
  * @author    Sven Baumann <baumann.sv@gmail.com>
  * @author    Dominik Tomasi <dominik.tomasi@gmail.com>
  * @license   GNU/LGPL
- * @copyright Copyright 2014-2016 ContaoBlackForest
+ * @copyright Copyright 2014-2018 ContaoBlackForest
  */
 
 namespace ContaoBlackForest\DropZoneBundle\DataContainer\Table;
 
 use Contao\ArticleModel;
 use Contao\BackendUser;
-use Contao\CalendarEventsModel;
 use Contao\Config;
 use Contao\ContentModel;
+use Contao\Controller;
 use Contao\Database;
 use Contao\Environment;
-use Contao\FaqModel;
 use Contao\FilesModel;
 use Contao\Input;
-use Contao\NewsletterModel;
-use Contao\NewsModel;
+use Contao\Model;
 use Contao\PageModel;
+use Contao\StringUtil;
 use ContaoBlackForest\DropZoneBundle\Event\GetDropZoneUrlEvent;
+use ContaoBlackForest\DropZoneBundle\Event\GetFilenameEvent;
 use ContaoBlackForest\DropZoneBundle\Event\GetUploadFolderEvent;
 use ContaoBlackForest\DropZoneBundle\Event\InitializeDropZoneForPropertyEvent;
 use Database\Result;
@@ -67,6 +67,10 @@ class Common implements EventSubscriberInterface
 
             GetDropZoneUrlEvent::NAME => array(
                 array('getDropZoneUrl')
+            ),
+
+            GetFilenameEvent::NAME => array(
+                array('reviseFileName')
             )
         );
     }
@@ -113,25 +117,9 @@ class Common implements EventSubscriberInterface
             return;
         }
 
-        $folderUuid = $this->findPageUploadFolder($event);
-        if (!$folderUuid) {
-            $folderUuid = $this->findNewsSectionUploadFolder($event);
-        }
-        if (!$folderUuid) {
-            $folderUuid = $this->findCalendarSectionUploadFolder($event);
-        }
-        if (!$folderUuid) {
-            $folderUuid = $this->findFaqSectionUploadFolder($event);
-        }
-        if (!$folderUuid) {
-            $folderUuid = $this->findNewsletterSectionUploadFolder($event);
-        }
-
-        if ($folderUuid) {
-            $filesModel = FilesModel::findByUuid($folderUuid);
-            if ($filesModel) {
-                $uploadFolder = $filesModel->path;
-            }
+        $uploadFolder = $this->findPageUploadFolder($event);
+        if (!$uploadFolder) {
+            $uploadFolder = $this->findUploadFolderByModule($event);
         }
 
         if (!$uploadFolder) {
@@ -164,11 +152,132 @@ class Common implements EventSubscriberInterface
     }
 
     /**
+     * Revise the file name.
+     *
+     * @param GetFilenameEvent $event The event.
+     *
+     * @return void
+     */
+    public function reviseFileName(GetFilenameEvent $event)
+    {
+        if (!in_array(Input::get('do'), array('article', 'news', 'calendar', 'faq', 'newsletter'))) {
+            return null;
+        }
+
+        $itemModel = null;
+        if ('tl_content' === $event->getDataProvider()) {
+            $contentModelClass = Model::getClassFromTable($event->getDataProvider());
+            if (!class_exists($contentModelClass)) {
+                return;
+            }
+
+            $contentModel = $contentModelClass::findByPk(Input::get('id'));
+            if (!$contentModel || !$contentModel->pid || !$contentModel->ptable) {
+                return;
+            }
+
+            $itemModelClass = Model::getClassFromTable($contentModel->ptable);
+            if (!class_exists($itemModelClass)) {
+                return;
+            }
+
+            $itemModel = $itemModelClass::findByPk($contentModel->pid);
+        }
+
+        if (!$itemModel) {
+            $itemModelClass = Model::getClassFromTable($event->getDataProvider());
+            if (!class_exists($itemModelClass)) {
+                return;
+            }
+
+            $itemModel = $itemModelClass::findByPk(Input::get('id'));
+        }
+
+        if (!$itemModel || !$itemModel->pid) {
+            return;
+        }
+
+        $parentModel = $itemModel->getRelated('pid');
+        if (!$parentModel->dropzoneNotOverride) {
+            if (!$GLOBALS['loadDataContainer'][$parentModel->getTable()]) {
+                Controller::loadDataContainer($parentModel->getTable());
+            }
+            if (5 !== $GLOBALS['TL_DCA'][$parentModel->getTable()]['list']['sorting']['mode']) {
+                return;
+            }
+
+            // Support of inheritance in the tree view.
+            if (!$parentModel->pid) {
+                return;
+            }
+
+            $trailModel = $parentModel::findByPk($parentModel->pid);
+            while ($trailModel->pid) {
+                if ($trailModel->dropzoneNotOverride) {
+                    break;
+                }
+
+                $trailModel = $trailModel::findByPk($trailModel->pid);
+            }
+
+            if (!$trailModel->dropzoneNotOverride) {
+                return;
+            }
+
+            foreach (array('dropzoneNotOverride', 'dropzonePostfix', 'dropzoneCounterLength') as $trailProperty) {
+                $parentModel->{$trailProperty} = $trailModel->{$trailProperty};
+            }
+        }
+
+        $uploadFolder = Input::get('dropfolder');
+        if (!file_exists(
+            TL_ROOT . DIRECTORY_SEPARATOR . $uploadFolder . DIRECTORY_SEPARATOR . $event->getOriginalFilename()
+        )) {
+            return;
+        }
+
+        $filesModel = FilesModel::findMultipleFilesByFolder($uploadFolder);
+        if (!$filesModel) {
+            return;
+        }
+
+        $filename  = substr($event->getOriginalFilename(), 0, strrpos($event->getOriginalFilename(), '.'));
+        $extension = substr($event->getOriginalFilename(), strrpos($event->getOriginalFilename(), '.'));
+
+        $files = array();
+        while ($filesModel->next()) {
+            if (false === stripos($filesModel->name, $filename) && false === stripos($filesModel->name, $extension)) {
+                continue;
+            }
+
+            $files[] = $filesModel->name;
+        }
+        sort($files);
+
+        $counter     = $parentModel->dropzoneCounterLength;
+        $newFilename = $parentModel->dropzonePostfix . $filename . '-' . $counter;
+
+        while (in_array($newFilename . $extension, $files)) {
+            $counter++;
+            //Support leading 0 in the file counter.
+            $counter = str_pad($counter, strlen($parentModel->dropzoneCounterLength), 0, STR_PAD_LEFT);
+
+            $newFilename = $parentModel->dropzonePostfix . $filename . '-' . $counter;
+        }
+
+        if (!in_array($newFilename . $extension, $files)) {
+            $event->setFilename($newFilename . $extension);
+
+            return;
+        }
+    }
+
+    /**
      * Find the uploader page upload folder.
      *
      * @param GetUploadFolderEvent $event The event.
      *
-     * @return mixed|null
+     * @return string|null
      */
     private function findPageUploadFolder(GetUploadFolderEvent $event)
     {
@@ -182,9 +291,10 @@ class Common implements EventSubscriberInterface
         $articleModel = ArticleModel::findByPk($contentModel->pid);
         $pageModel    = $articleModel->getRelated('pid');
 
-        $folderUuid = null;
+        $uploadFolder = null;
+        $pageModel->loadDetails();
+
         if (!$pageModel->dropzoneFolder) {
-            $pageModel->loadDetails();
 
             if (count($pageModel->trail)) {
                 foreach ($pageModel->trail as $pageId) {
@@ -193,154 +303,118 @@ class Common implements EventSubscriberInterface
                         continue;
                     }
 
-                    $folderUuid = $trailPageModel->dropzoneFolder;
+                    // Override the dropzone folder chunks in the trail page.
+                    if ($pageModel->dropzoneExtendFolderPath) {
+                        $trailPageModel->dropzoneFolderChunks = $pageModel->dropzoneFolderChunks;
+                    }
+
+                    $uploadFolder = $this->getUploadDirectoryFromModel($trailPageModel, $pageModel);
+                    break;
                 }
             }
         } else {
-            $folderUuid = $pageModel->dropzoneFolder;
+            $uploadFolder = $this->getUploadDirectoryFromModel($pageModel, $pageModel);
         }
 
-        return $folderUuid;
+        return $uploadFolder;
     }
 
     /**
-     * Find the upload folder for the news section.
+     * Find the upload folder by core modules.
      *
      * @param GetUploadFolderEvent $event The event.
      *
-     * @return mixed|null
+     * @return string|null
      */
-    private function findNewsSectionUploadFolder(GetUploadFolderEvent $event)
+    private function findUploadFolderByModule(GetUploadFolderEvent $event)
     {
-        if ('news' !== Input::get('do')) {
+        if (!in_array(Input::get('do'), array('news', 'calendar', 'faq', 'newsletter'))) {
             return null;
         }
 
-        if ('tl_news' === $event->getDataProvider()) {
-            $newsModel = NewsModel::findByPk(Input::get('id'));
-            if (!$newsModel) {
-                return null;
-            }
-
-            $newsArchiveModel = $newsModel->getRelated('pid');
-
-            return $newsArchiveModel->dropzoneFolder;
-        }
-
+        $itemModel = null;
         if ('tl_content' === $event->getDataProvider()) {
-            $contentModel = ContentModel::findByPk(Input::get('id'));
-            if (!$contentModel) {
+            $contentModelClass = Model::getClassFromTable($event->getDataProvider());
+            if (!class_exists($contentModelClass)) {
                 return null;
             }
 
-            $newsModel = NewsModel::findByPk($contentModel->pid);
-            if (!$newsModel) {
+            $contentModel = $contentModelClass::findByPk(Input::get('id'));
+            if (!$contentModel || !$contentModel->pid || !$contentModel->ptable) {
                 return null;
             }
 
-            $newsArchiveModel = $newsModel->getRelated('pid');
+            $itemModelClass = Model::getClassFromTable($contentModel->ptable);
+            if (!class_exists($itemModelClass)) {
+                return null;
+            }
 
-            return $newsArchiveModel->dropzoneFolder;
+            $itemModel = $itemModelClass::findByPk($contentModel->pid);
         }
 
-        return null;
-    }
+        if (!$itemModel) {
+            $itemModelClass = Model::getClassFromTable($event->getDataProvider());
+            if (!class_exists($itemModelClass)) {
+                return null;
+            }
 
-    /**
-     * Find the upload folder for the calendar section.
-     *
-     * @param GetUploadFolderEvent $event The event.
-     *
-     * @return mixed|null
-     */
-    private function findCalendarSectionUploadFolder(GetUploadFolderEvent $event)
-    {
-        if ('calendar' !== Input::get('do')) {
+            $itemModel = $itemModelClass::findByPk(Input::get('id'));
+        }
+
+        if (!$itemModel || !$itemModel->pid) {
             return null;
         }
 
-        if ('tl_calendar_events' === $event->getDataProvider()) {
-            $calendarEventsModel = CalendarEventsModel::findByPk(Input::get('id'));
-            if (!$calendarEventsModel) {
-                return null;
-            }
+        $parentModel = $itemModel->getRelated('pid');
 
-            $calendarModel = $calendarEventsModel->getRelated('pid');
-
-            return $calendarModel->dropzoneFolder;
+        if ($parentModel->dropzoneTitleInFolder) {
+            $extendedPath = StringUtil::generateAlias($parentModel->title);
+        }
+        if ($parentModel->dropzoneAliasInFolder && $itemModel->alias) {
+            $extendedPath = $extendedPath ? $extendedPath . '/' . $itemModel->alias : $itemModel->alias;
         }
 
-        if ('tl_content' === $event->getDataProvider()) {
-            $contentModel = ContentModel::findByPk(Input::get('id'));
-            if (!$contentModel) {
-                return null;
-            }
-
-            $calendarEventsModel = CalendarEventsModel::findByPk($contentModel->pid);
-            if (!$calendarEventsModel) {
-                return null;
-            }
-
-            $calendarModel = $calendarEventsModel->getRelated('pid');
-
-            return $calendarModel->dropzoneFolder;
-        }
-
-        return null;
+        return $this->getUploadDirectoryFromModel($parentModel, null, $extendedPath);
     }
 
     /**
-     * Find the upload folder for the faq section.
+     * Get the upload directory from the model.
      *
-     * @param GetUploadFolderEvent $event The event.
+     * @param Model          $model        The model width the upload directory data.
      *
-     * @return mixed|null
+     * @param PageModel|null $pageModel    The page model for usage the available insert tags (optional).
+     *
+     * @param string|null    $extendedPath The extended path.
+     *
+     * @return string|null
      */
-    private function findFaqSectionUploadFolder(GetUploadFolderEvent $event)
+    private function getUploadDirectoryFromModel(Model $model, PageModel $pageModel = null, $extendedPath = null)
     {
-        if ('faq' !== Input::get('do')) {
+        $filesModel = FilesModel::findByUuid($model->dropzoneFolder);
+        if (!$filesModel) {
             return null;
         }
+        $uploadFolder = $filesModel->path;
+        if ($extendedPath) {
+            $uploadFolder .= '/' . $extendedPath;
+        }
 
-        if ('tl_faq' === $event->getDataProvider()) {
-            $faqModel = FaqModel::findByPk(Input::get('id'));
-            if (!$faqModel) {
-                return null;
+        // Set the object page for support the page insert tags.
+        if ($pageModel) {
+            $GLOBALS['objPage'] = $pageModel;
+        }
+
+        if ($model->dropzoneExtendFolderPath) {
+            foreach (unserialize($model->dropzoneFolderChunks) as $item) {
+                $uploadFolder .= '/' . Controller::replaceInsertTags($item['chunk']);
             }
-
-            $faqCategoryModel = $faqModel->getRelated('pid');
-
-            return $faqCategoryModel->dropzoneFolder;
         }
 
-        return null;
-    }
-
-    /**
-     * Find the upload folder for the newsletter section.
-     *
-     * @param GetUploadFolderEvent $event The event.
-     *
-     * @return mixed|null
-     */
-    private function findNewsletterSectionUploadFolder(GetUploadFolderEvent $event)
-    {
-        if ('newsletter' !== Input::get('do')) {
-            return null;
+        if ($pageModel) {
+            unset($GLOBALS['objPage']);
         }
 
-        if ('tl_newsletter' === $event->getDataProvider()) {
-            $newsletterModel = NewsletterModel::findByPk(Input::get('id'));
-            if (!$newsletterModel) {
-                return null;
-            }
-
-            $newsletterChannelModel = $newsletterModel->getRelated('pid');
-
-            return $newsletterChannelModel->dropzoneFolder;
-        }
-
-        return null;
+        return $uploadFolder;
     }
 
     /**

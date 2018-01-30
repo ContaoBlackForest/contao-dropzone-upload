@@ -14,6 +14,62 @@
         <source>Here you can define the upload directory. This directory is used in the event and its content elements.</source>
         <target>Hier können Sie das Upload Verzeichnis definieren. Diese Verzeichnis wird im Event und deren Content Elmenten benutzt.</target>
       </trans-unit>
+      <trans-unit id="tl_calendar.dropzoneTitleInFolder.0">
+        <source>Title in path</source>
+        <target>Titel im Pfad</target>
+      </trans-unit>
+      <trans-unit id="tl_calendar.dropzoneTitleInFolder.1">
+        <source>If this option is activated, the title of the event calendar in the upload path is used as an alias.</source>
+        <target>Wenn diese Option aktiviert ist, wird der Titel des Event Kalenders im Upload-Pfad als Alias benutzt.</target>
+      </trans-unit>
+      <trans-unit id="tl_calendar.dropzoneAliasInFolder.0">
+        <source>Event-Alias in path</source>
+        <target>Event-Alias im Pfad</target>
+      </trans-unit>
+      <trans-unit id="tl_calendar.dropzoneAliasInFolder.1">
+        <source>If this option is enabled, the alias of the event in the path is used.</source>
+        <target>Wenn Sie diese Option aktiviert ist, wird der Alias des Events im Pfad benutzt.</target>
+      </trans-unit>
+      <trans-unit id="tl_calendar.dropzoneExtendFolderPath.0">
+        <source>Extending the Upload Directory</source>
+        <target>Upload-Verzeichnis erweitern</target>
+      </trans-unit>
+      <trans-unit id="tl_calendar.dropzoneExtendFolderPath.1">
+        <source>If active, you can extend the upload directory.</source>
+        <target>Wenn aktiv können Sie das Upload-Verzeichnis erweitern.</target>
+      </trans-unit>
+      <trans-unit id="tl_calendar.dropzoneFolderChunks.0">
+        <source>Upload directory extensions</source>
+        <target>Upload-Verzeichnis Erweiterungen</target>
+      </trans-unit>
+      <trans-unit id="tl_calendar.dropzoneFolderChunks.1">
+        <source>Here the additional upload directory parts are determined. For example, you can use insert tags to dynamically extend the path.</source>
+        <target>Hier werden die zusätzlichen Upload-Verzeichnis Teile bestimmt. Sie können z.B. mit Hilfe der Inserttags den Pfad dynamisch erweitern.</target>
+      </trans-unit>
+      <trans-unit id="tl_calendar.dropzoneNotOverride.0">
+        <source>Do not overwrite</source>
+        <target>Nicht überschreiben</target>
+      </trans-unit>
+      <trans-unit id="tl_calendar.dropzoneNotOverride.1">
+        <source>If this setting is active, existing files are not overwritten. If the file with the same name exists, the file name is extended with the postfix and the counter.</source>
+        <target>Ist diese Einstellung aktiv, werden bestehende Dateien nicht überschrieben. Wenn die Datei mit dem selben Namen vorhanden ist, wird der Dateinamen mit dem Postfix und dem Counter erweitert.</target>
+      </trans-unit>
+      <trans-unit id="tl_calendar.dropzonePostfix.0">
+        <source>Postfix</source>
+        <target>Postfix</target>
+      </trans-unit>
+      <trans-unit id="tl_calendar.dropzonePostfix.1">
+        <source>Here you can specify the postfix for the file name. This is appended to the file name if the file name exists.</source>
+        <target>Hier können Sie den Postfix für den Dateinamen angeben. Dieser wird wenn der Dateinamen vorhanden an den Dateinamen angehängt.</target>
+      </trans-unit>
+      <trans-unit id="tl_calendar.dropzoneCounterLength.0">
+        <source>Counter</source>
+        <target>Counter</target>
+      </trans-unit>
+      <trans-unit id="tl_calendar.dropzoneCounterLength.1">
+        <source>This sets the initial counter length for the existing file name, which is appended to the file name.</source>
+        <target>Hier wird die anfängliche Counterlänge für den vorhandene Dateinamen eingestellt, dieser wird an den Dateinamen angehängt.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

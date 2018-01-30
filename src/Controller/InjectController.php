@@ -7,7 +7,7 @@
  * @author    Sven Baumann <baumann.sv@gmail.com>
  * @author    Dominik Tomasi <dominik.tomasi@gmail.com>
  * @license   GNU/LGPL
- * @copyright Copyright 2014-2016 ContaoBlackForest
+ * @copyright Copyright 2014-2018 ContaoBlackForest
  */
 
 namespace ContaoBlackForest\DropZoneBundle\Controller;
@@ -52,20 +52,12 @@ class InjectController
      */
     private function includeDropZoneAssets()
     {
-        $css        = 'assets/dropzone/' . $GLOBALS['TL_ASSETS']['DROPZONE'] . '/css/dropzone.min.css';
-        $javascript = 'assets/dropzone/' . $GLOBALS['TL_ASSETS']['DROPZONE'] . '/js/dropzone.min.js';
+        $css        = 'assets/dropzone/' . $GLOBALS['TL_ASSETS']['DROPZONE'] . '/css/dropzone.min.css|static';
+        $javascript = 'assets/dropzone/' . $GLOBALS['TL_ASSETS']['DROPZONE'] . '/js/dropzone.min.js|static';
 
-        if (!in_array('TL_CSS', $GLOBALS, null)
-            || !in_array($css, $GLOBALS['TL_CSS'], null)
-        ) {
-            $GLOBALS['TL_CSS'][] = $css;
-        }
+        $GLOBALS['TL_CSS'][md5($css)] = $css;
 
-        if (!in_array('TL_JAVASCRIPT', $GLOBALS, null)
-            || !in_array($javascript, $GLOBALS['TL_JAVASCRIPT'], null)
-        ) {
-            $GLOBALS['TL_JAVASCRIPT'][] = $javascript;
-        }
+        $GLOBALS['TL_JAVASCRIPT'][md5($javascript)] = $javascript;
 
         Controller::loadLanguageFile('tl_files');
     }
@@ -124,7 +116,7 @@ class InjectController
 
         $this->includeDropZoneAssets();
 
-        $dropZone                    = new BackendTemplate('be_image_dropzone');
+        $dropZone                    = new BackendTemplate('be_dropzone');
         $dropZone->url               = '\'' . $dropZoneUrlEvent->getUrl() . '\'';
         $dropZone->uploadDescription = $dropZoneDescriptionEvent->getDescription();
         $dropZone->controlInputField = $widget->id;
@@ -133,6 +125,7 @@ class InjectController
         $dropZone->orderField        = $widget->orderField;
         $dropZone->extensions        = $widget->extensions;
         $dropZone->table             = $widget->strTable;
+        $dropZone->contao3           = !(class_exists('Contao\CoreBundle\ContaoCoreBundle'));
 
         if ('toggleSubpalette' === Input::post('action')) {
             $dropZone->stylesheet = 'assets/dropzone/' . $GLOBALS['TL_ASSETS']['DROPZONE'] . '/css/dropzone.min.css';

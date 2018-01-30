@@ -8,6 +8,12 @@
       <trans-unit id="tl_form_field.multipleUpload.1">
         <source>Here you can enable feature to upload multiple files.</source>
       </trans-unit>
+      <trans-unit id="tl_form_field.multipleUploadLimit.0">
+        <source>Upload limit</source>
+      </trans-unit>
+      <trans-unit id="tl_form_field.multipleUploadLimit.1">
+        <source>You can specify the number of files to upload. If you set it to 0, the upload is unlimited.</source>
+      </trans-unit>
       <trans-unit id="tl_form_field.dropzoneUpload.0">
         <source>Dropzone upload</source>
       </trans-unit>

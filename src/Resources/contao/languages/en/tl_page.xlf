@@ -11,6 +11,36 @@
       <trans-unit id="tl_page.dropzoneFolder.1">
         <source>Here you can define the upload directory. This directory can be overwritten in the subpages and is used in the articles and content elements.</source>
       </trans-unit>
+      <trans-unit id="tl_page.dropzoneExtendFolderPath.0">
+        <source>Extending the Upload Directory</source>
+      </trans-unit>
+      <trans-unit id="tl_page.dropzoneExtendFolderPath.1">
+        <source>If active, you can extend the upload directory.</source>
+      </trans-unit>
+      <trans-unit id="tl_page.dropzoneFolderChunks.0">
+        <source>Upload directory extensions</source>
+      </trans-unit>
+      <trans-unit id="tl_page.dropzoneFolderChunks.1">
+        <source>Here the additional upload directory parts are determined. For example, you can use insert tags to dynamically extend the path.</source>
+      </trans-unit>
+      <trans-unit id="tl_page.dropzoneNotOverride.0">
+        <source>Do not overwrite</source>
+      </trans-unit>
+      <trans-unit id="tl_page.dropzoneNotOverride.1">
+        <source>If this setting is active, existing files are not overwritten. If the file with the same name exists, the file name is extended with the postfix and the counter.</source>
+      </trans-unit>
+      <trans-unit id="tl_page.dropzonePostfix.0">
+        <source>Postfix</source>
+      </trans-unit>
+      <trans-unit id="tl_page.dropzonePostfix.1">
+        <source>Here you can specify the postfix for the file name. This is appended to the file name if the file name exists.</source>
+      </trans-unit>
+      <trans-unit id="tl_page.dropzoneCounterLength.0">
+        <source>Counter</source>
+      </trans-unit>
+      <trans-unit id="tl_page.dropzoneCounterLength.1">
+        <source>This sets the initial counter length for the existing file name, which is appended to the file name.</source>
+      </trans-unit>
     </body>
   </file>
 </xliff>
