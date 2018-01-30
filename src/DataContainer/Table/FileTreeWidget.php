@@ -12,9 +12,11 @@
 
 namespace ContaoBlackForest\DropZoneBundle\DataContainer\Table;
 
+use Contao\Controller;
 use Contao\Database;
 use Contao\FileTree;
 use Contao\Input;
+use Contao\System;
 use ContaoBlackForest\DropZoneBundle\Event\GetFileTreeWidgetEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -61,6 +63,9 @@ class FileTreeWidget implements EventSubscriberInterface
     {
         $dataProvider = $event->getDataProvider();
 
+        if (!$GLOBALS['loadDataContainer'][$dataProvider]) {
+            Controller::loadDataContainer($dataProvider);
+        }
         if (false === isset($GLOBALS['TL_DCA'][$dataProvider]['config']['dataContainer'])) {
             return;
         }
@@ -84,7 +89,26 @@ class FileTreeWidget implements EventSubscriberInterface
             foreach ($GLOBALS['TL_DCA'][$dataProvider]['fields'][$property]['load_callback'] as $callback) {
                 if (is_array($callback)) {
                     $reflectionClass = new \ReflectionClass($callback[0]);
-                    $instance        = $reflectionClass->newInstance();
+
+                    $instance = null;
+                    if (class_exists('Contao\CoreBundle\ContaoCoreBundle')) {
+                        $container = System::getContainer();
+
+                        if ($container->has($reflectionClass->getName())
+                            && (strpos($reflectionClass->getName(), '\\') !== false
+                                || !class_exists($reflectionClass->getName())
+                            )
+                        ) {
+                            $instance = $container->get($reflectionClass->getName());
+                        }
+                    }
+                    if (!$instance && $reflectionClass->hasMethod('getInstance')) {
+                        $instance = $reflectionClass->newInstance();
+                    }
+                    if (!$instance) {
+                        $instance = $reflectionClass->newInstanceWithoutConstructor();
+                    }
+
 
                     $instance->{$callback[1]}($result->{$property}, $dc);
                 } elseif (is_callable($callback)) {

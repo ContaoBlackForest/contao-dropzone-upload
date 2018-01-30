@@ -28,7 +28,11 @@ $GLOBALS['TL_HOOKS']['compileFormFields'][] = array(
     'registerLoadFormFieldHook'
 );
 
-$GLOBALS['TL_HOOKS']['parseWidget'][] = array(
+$GLOBALS['TL_HOOKS']['parseWidget'][]     = array(
     'ContaoBlackForest\DropZoneBundle\Form\DropzoneFileUpload',
     'initialize'
+);
+$GLOBALS['TL_HOOKS']['prepareFormData'][] = array(
+    'ContaoBlackForest\DropZoneBundle\Form\DropzoneFileUpload',
+    'prepareFormData'
 );

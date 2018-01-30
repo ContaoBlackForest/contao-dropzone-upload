@@ -10,6 +10,14 @@
         <source>Here you can enable feature to upload multiple files.</source>
         <target>Hier können Sie Funktion aktivieren mehrere Dateien hochzuladen.</target>
       </trans-unit>
+      <trans-unit id="tl_form_field.multipleUploadLimit.0">
+        <source>Upload limit</source>
+        <target>Upload limit</target>
+      </trans-unit>
+      <trans-unit id="tl_form_field.multipleUploadLimit.1">
+        <source>You can specify the number of files to upload. If you set it to 0, the upload is unlimited.</source>
+        <target>Er können Sie die Anzahl der Dateien für den Upload bestimmen. Wenn Sie 0 einstellen, ist der Upload unbeschränkt möglich.</target>
+      </trans-unit>
       <trans-unit id="tl_form_field.dropzoneUpload.0">
         <source>Dropzone upload</source>
         <target>Dropzone Upload</target>

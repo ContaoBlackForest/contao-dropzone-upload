@@ -14,6 +14,62 @@
         <source>Here you can define the upload directory. This directory is used in the messages and their content elements.</source>
         <target>Hier können Sie das Upload Verzeichnis definieren. Diese Verzeichnis wird in den Nachrichten und deren Content Elmenten benutzt.</target>
       </trans-unit>
+      <trans-unit id="tl_news_archive.dropzoneTitleInFolder.0">
+        <source>Title in path</source>
+        <target>Titel im Pfad</target>
+      </trans-unit>
+      <trans-unit id="tl_news_archive.dropzoneTitleInFolder.1">
+        <source>If this option is activated, the title of the message archive in the upload path is used as an alias.</source>
+        <target>Wenn diese Option aktiviert ist, wird der Titel des Nachrichten Archives im Upload-Pfad als Alias benutzt.</target>
+      </trans-unit>
+      <trans-unit id="tl_news_archive.dropzoneAliasInFolder.0">
+        <source>News-Alias in path</source>
+        <target>Nachrichten-Alias im Pfad</target>
+      </trans-unit>
+      <trans-unit id="tl_news_archive.dropzoneAliasInFolder.1">
+        <source>If this option is enabled, the alias of the message in the path is used.</source>
+        <target>Wenn Sie diese Option aktiviert ist, wird der Alias der Nachricht im Pfad benutzt.</target>
+      </trans-unit>
+      <trans-unit id="tl_news_archive.dropzoneExtendFolderPath.0">
+        <source>Extending the Upload Directory</source>
+        <target>Upload-Verzeichnis erweitern</target>
+      </trans-unit>
+      <trans-unit id="tl_news_archive.dropzoneExtendFolderPath.1">
+        <source>If active, you can extend the upload directory.</source>
+        <target>Wenn aktiv können Sie das Upload-Verzeichnis erweitern.</target>
+      </trans-unit>
+      <trans-unit id="tl_news_archive.dropzoneFolderChunks.0">
+        <source>Upload directory extensions</source>
+        <target>Upload-Verzeichnis Erweiterungen</target>
+      </trans-unit>
+      <trans-unit id="tl_news_archive.dropzoneFolderChunks.1">
+        <source>Here the additional upload directory parts are determined. For example, you can use insert tags to dynamically extend the path.</source>
+        <target>Hier werden die zusätzlichen Upload-Verzeichnis Teile bestimmt. Sie können z.B. mit Hilfe der Inserttags den Pfad dynamisch erweitern.</target>
+      </trans-unit>
+      <trans-unit id="tl_news_archive.dropzoneNotOverride.0">
+        <source>Do not overwrite</source>
+        <target>Nicht überschreiben</target>
+      </trans-unit>
+      <trans-unit id="tl_news_archive.dropzoneNotOverride.1">
+        <source>If this setting is active, existing files are not overwritten. If the file with the same name exists, the file name is extended with the postfix and the counter.</source>
+        <target>Ist diese Einstellung aktiv, werden bestehende Dateien nicht überschrieben. Wenn die Datei mit dem selben Namen vorhanden ist, wird der Dateinamen mit dem Postfix und dem Counter erweitert.</target>
+      </trans-unit>
+      <trans-unit id="tl_news_archive.dropzonePostfix.0">
+        <source>Postfix</source>
+        <target>Postfix</target>
+      </trans-unit>
+      <trans-unit id="tl_news_archive.dropzonePostfix.1">
+        <source>Here you can specify the postfix for the file name. This is appended to the file name if the file name exists.</source>
+        <target>Hier können Sie den Postfix für den Dateinamen angeben. Dieser wird wenn der Dateinamen vorhanden an den Dateinamen angehängt.</target>
+      </trans-unit>
+      <trans-unit id="tl_news_archive.dropzoneCounterLength.0">
+        <source>Counter</source>
+        <target>Counter</target>
+      </trans-unit>
+      <trans-unit id="tl_news_archive.dropzoneCounterLength.1">
+        <source>This sets the initial counter length for the existing file name, which is appended to the file name.</source>
+        <target>Hier wird die anfängliche Counterlänge für den vorhandene Dateinamen eingestellt, dieser wird an den Dateinamen angehängt.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
