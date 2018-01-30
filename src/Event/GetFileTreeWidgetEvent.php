@@ -26,7 +26,7 @@ class GetFileTreeWidgetEvent extends Event
     /**
      * @var string The event name.
      */
-    const NAME = 'ContaoBlackForest\DropZoneBundle\Event\GetFileTreeWidgetEvent';
+    const NAME = 'cb.dropzone_upload.get_file_tree_widget';
 
     /**
      * @var EventDispatcherInterface The event dispatcher.
